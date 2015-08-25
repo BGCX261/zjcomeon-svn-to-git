@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="horizontal" 
+	xmlns:efflex="org.efflex.mx.viewStackEffects.*"
+	
+	creationComplete="init()">
+	
+	<mx:Style source="css/mainCss.css"/>
+	<!--preinitialize="loadStyle()"-->
+	<mx:Script source="main.as"/>
+	<mx:Script>
+		<![CDATA[
+			import mx.managers.PopUpManager;
+			import mx.events.ItemClickEvent;
+			import mx.controls.Alert;
+			import flash.net.NetConnection
+			import mx.collections.ArrayCollection;
+			
+			private var nc:NetConnection;
+			
+			private var usersArrayCollection:ArrayCollection=new ArrayCollection(); 
+			
+			import mx.rpc.events.ResultEvent;  
+
+			import mx.rpc.events.FaultEvent;  
+            import mx.rpc.remoting.mxml.RemoteObject;  
+
+			private var myHandler: RemoteObject;
+			/***********************************************************/
+			/***********************************************************/
+			/***********************************************************/
+			private var loginWin:LoginWindow;
+			/***********************************************************/
+
+			private var styleSheet:StyleSheet; 
+            private var urlLoader:URLLoader; 
+
+			//初始化状态
+			private function init():void{
+				/* urlLoader = new URLLoader(); 
+                urlLoader.addEventListener(Event.COMPLETE, function(evt:Event){
+	                 var sheet:StyleSheet = new StyleSheet();
+
+	                sheet.parseCSS(evt.target.data); 
+	                // Set the style sheet. 
+	               // textArea.styleSheet = styleSheet; 
+				  Application.application.styleSheet=styleSheet
+                }); 
+                urlLoader.load(new URLRequest("css\\mainCss.css")); 
+ */
+
+				
+				//显示登陆窗
+				if(loginWin==null){
+					showLoginWin();
+				}
+				//msgText.addEventListener(KeyboardEvent.KEY_DOWN,sendMsg_enter);
+			}
+			
+			
+			private function result(e:Object):void{
+				Alert.show(e.toString());
+			}
+			
+			
+			//断开连接
+			private function disConn():void{
+				if(nc!=null){
+					nc.close();
+					nc=null;
+				}
+			}
+			
+			//建立连接
+			public function onConn(clientName:String):void{
+				
+				//Security.loadPolicyFile("http://localhost:8000/zjChat/crossdomain.xml");
+
+
+				nc=new NetConnection();
+				nc.addEventListener(NetStatusEvent.NET_STATUS,netStatus);
+				nc.connect("rtmp://localhost/zjChat",clientName);
+				
+				nc.client=this;	
+				
+				//显示加载框
+				//showHideLoding(loginLoading,true);
+			}
+			
+			private function netStatus(e:NetStatusEvent):void{
+				switch(e.info.code){
+					//地址错误
+					case "NetConnection.Connect.Failed":
+						Alert.show(e.info.application,"地址错误");			
+					break;
+					
+					//连接成功
+					case "NetConnection.Connect.Success":		           
+						hideLoginWin();		//删除登陆窗
+						joinRoom();			//进入聊天室				
+					break;
+					
+					//关闭
+					case "NetConnection.Connect.Closed":
+						Alert.show(e.info.application,"关闭");
+						
+						changeLoginStateView();
+					break;
+					
+					//拒绝
+					case "NetConnection.Connect.Rejected":
+						Alert.show(e.info.application,"被拒绝");
+						
+						changeLoginStateView();
+					break;
+					
+				}
+				
+				//隐藏加载框
+				//showHideLoding(loginLoading,false);
+			}
+			
+
+			
+			//加入房间
+			private function joinRoom():void{
+				var res:Responder=new Responder(result);
+				nc.call("clientLogin",res);
+			}
+			
+			//客户列表更新
+			public function sendAllClientList(re:Object):void{
+				usersArrayCollection.source=re as Array;
+			}
+			//客户状态更新
+			public function sendAllClientStatus(re:Object):void{
+				clientStatus.text=re.toString();
+			}
+			
+			//更新聊天内容
+			public function sendAllClientMsg(re:Object):void{
+				allMsg.text+=re.toString()+"\n";
+			}
+			
+			//发送聊天
+			public function sendMsg_enter(evt:KeyboardEvent):void{
+				
+				if(evt.keyCode==13){
+					nc.call("sendMessage",null,this.msgText.text);
+					this.msgText.text="";
+				}
+				
+			}
+			public function sendMsg():void{
+				nc.call("sendMessage",null,this.msgText.text);
+				this.msgText.text="";		
+			}
+			
+			private function getClickClient(e:Event):void{
+				var cid:String=e.currentTarget.selectedItem.userId;
+				
+			}
+			
+		]]>
+	</mx:Script>
+	
+
+	<mx:Zoom id="zoom"/>
+	<mx:Fade id="fadeOut" duration="1000" alphaFrom="1.0" alphaTo="0.0"/>
+	 
+	<mx:HBox id="mainPanel" width="100%" height="100%" showEffect="zoom" hideEffect="zoom" horizontalGap="0">
+		<mx:Panel title="List" width="20%" height="100%">
+			<mx:VDividedBox height="100%" width="100%">
+				<mx:List width="100%" height="80%" id="clientList" dataProvider="{usersArrayCollection}" labelField="userName" itemDoubleClick="getClickClient(event)" doubleClickEnabled="true"/>
+				<mx:TextArea width="100%" height="20%" id="clientStatus"/>
+			</mx:VDividedBox>
+		</mx:Panel>
+		
+		<mx:VBox width="16" height="100%" horizontalAlign="left" verticalAlign="middle">
+			<mx:Box id="ListAndMessageZoomImg" styleName="ListAndMessageZoomImg" width="20" height="20"/>
+		</mx:VBox>
+		
+		<mx:HBox width="80%" height="100%" horizontalGap="0">
+			<mx:Panel title="public Message" width="50%" height="100%">
+				
+				<mx:VDividedBox height="100%" width="100%">
+					<mx:TextArea width="100%" height="75%" id="allMsg" editable="false"/>
+			
+					<mx:TextInput width="100%" height="25%" id="msgText"/>
+				</mx:VDividedBox>
+					
+				<mx:ControlBar horizontalAlign="right">
+						<mx:Button label="关闭" click="disConn()"/>
+						<mx:Button label="发送" click="sendMsg()"/>
+				</mx:ControlBar>
+			</mx:Panel>
+			
+			<mx:VBox width="16" height="100%" horizontalAlign="center" verticalAlign="middle">
+				<mx:Image id="priMsgAndpubMsgZoomImg" styleName="priMsgAndpubMsgZoomImg"/>
+			</mx:VBox>
+			
+			<mx:Panel title="private Message" width="50%" height="100%">
+				<mx:VBox width="100%" height="100%">
+					<mx:Panel title="video1" width="100%" height="50%">
+						
+					</mx:Panel>
+					
+					<mx:Panel title="video2" width="100%" height="50%">
+						
+					</mx:Panel>
+				</mx:VBox>
+			</mx:Panel>
+		</mx:HBox>
+	</mx:HBox>
+	
+</mx:Application>

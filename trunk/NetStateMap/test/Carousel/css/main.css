@@ -1,0 +1,9 @@
+Application {
+	backgroundGradientColors:#6666CC,#000066;  
+}
+
+Carousel {
+	baseShadowDistance:60;
+	blurRatio:13.375;
+	circleSmooshAmount:.1;
+}

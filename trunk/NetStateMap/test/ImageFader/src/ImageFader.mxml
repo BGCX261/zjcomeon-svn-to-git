@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application 
+  xmlns:mx="http://www.adobe.com/2006/mxml" 
+  layout="absolute" 
+  backgroundGradientAlphas="[1.0, 1.0]" 
+  backgroundGradientColors="[#000000, #5B5B5B]" 
+  creationComplete="onComplete()">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import com.adobe.webapis.flickr.*;
+			import com.adobe.webapis.flickr.events.*;
+			import gs.TweenMax;
+			import gs.easing.*;
+			
+			private static const SEARCH_STRING:String = "sunset";
+			private static const MAX_RESULTS:int = 50;
+			private static const API_KEY:String = "your api key goes here";
+			private static const TRANSITION_TIME:Number = 1;
+			private static const DISPLAY_TIME:Number = 3;
+			
+			private var photos:ArrayCollection = null;
+			private var currentImage:int = 0;
+			private var displayImage:Bitmap = null;
+			private var backgroundImage:Bitmap = null;
+			
+			Security.loadPolicyFile("http://farm1.static.flickr.com/crossdomain.xml");
+			Security.loadPolicyFile("http://farm2.static.flickr.com/crossdomain.xml");
+			Security.loadPolicyFile("http://farm3.static.flickr.com/crossdomain.xml");
+			Security.loadPolicyFile("http://farm4.static.flickr.com/crossdomain.xml");
+			 
+			private function onComplete():void
+			{
+				var service:FlickrService = new FlickrService(API_KEY);
+				service.addEventListener(FlickrResultEvent.PHOTOS_SEARCH, onPhotosSearch);
+  				service.photos.search("", SEARCH_STRING, "any", "", null, null, null, null, -1, "", MAX_RESULTS, 1);
+			}
+			
+			private function onPhotosSearch(event:FlickrResultEvent):void 
+			{
+				if (event.success)
+				{
+					var photoList:PagedPhotoList = event.data.photos;
+					photos = new ArrayCollection( photoList.photos );
+					loadNextImage();
+				}
+				else
+				{
+					Alert.show("Flickr call failed. Did you update the API Key?");
+				}
+			}
+			
+			private function loadNextImage():void
+			{
+				var imageURL:String = 'http://static.flickr.com/' + photos[currentImage].server + '/' + photos[currentImage].id + '_' + photos[currentImage].secret + '_m.jpg';
+				
+				++currentImage;
+				currentImage %= photos.length;
+				
+				var request:URLRequest = new URLRequest(imageURL);
+				var loader:Loader = new Loader();
+				loader.contentLoaderInfo.addEventListener(Event.COMPLETE, switchImages);
+				
+				loader.load(request);				
+			}
+			
+			private function switchImages(event:Event):void
+			{							
+				displayImage = event.currentTarget.content;
+				displayImage.smoothing = true;
+				displayImage.width = this.width;
+				displayImage.height = this.height;
+				displayImage.alpha = 0;
+				this.addChild(new DisplayObjectUIComponent(displayImage));
+								
+				TweenMax.to(displayImage, TRANSITION_TIME, {alpha:1, ease:Linear, onComplete:imageTweenComplete});
+				if (backgroundImage != null)
+					TweenMax.to(backgroundImage, TRANSITION_TIME, {alpha:0, ease:Linear});
+			}
+			
+			private function imageTweenComplete():void
+			{			
+				if (backgroundImage != null)
+					this.removeChild(backgroundImage.parent);				
+				backgroundImage = displayImage;
+				displayImage = null;
+								
+				TweenMax.delayedCall(DISPLAY_TIME, loadNextImage);
+			}			
+		]]>
+	</mx:Script>
+	
+</mx:Application>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+	width="400" height="300" 
+	layout="horizontal" horizontalAlign="center" verticalAlign="middle" 
+	>
+	<mx:Script>
+		<![CDATA[
+
+			public var loginNameFocus:String="请出输入用户名";
+			
+			private function loginEvent():void{
+				var loginName:String=this.clientName.text;
+				
+				if(loginName==loginNameFocus){
+					this.clientName.text=loginNameFocus;
+				}else{
+					parentApplication.onConn(loginName);
+					loginStateView.selectedChild=this.loading;
+				}	
+			}
+			
+			private function focusIn_LoginName():void{
+				this.clientName.text="";
+			}
+			
+			private function focusOut_LoginName():void{
+				if(this.clientName.text==loginNameFocus){
+					this.clientName.text=loginNameFocus;
+				}
+			}
+		]]>
+	</mx:Script>
+	
+			
+	<mx:ViewStack id="loginStateView" width="200" height="50">
+		<mx:Canvas id="login" width="200" height="200">
+				<mx:TextInput id="clientName" text="{loginNameFocus}" width="100%" focusIn="focusIn_LoginName()" focusOut="focusOut_LoginName()"/>
+		</mx:Canvas>
+		<mx:Canvas id="loading" width="100%" height="100%">
+				<mx:ProgressBar visible="true" id="loginLoading" mode="event" label="登录中..." indeterminate="true" labelPlacement="center" height="20" width="200"/>
+		</mx:Canvas>
+	</mx:ViewStack>
+				
+	<mx:ControlBar>
+			<mx:Button label="登录" click="loginEvent()"/>
+	</mx:ControlBar>
+
+</mx:TitleWindow>

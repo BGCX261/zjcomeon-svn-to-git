@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Skin xmlns:s="library://ns.adobe.com/flex/spark"
+		xmlns:fx="http://ns.adobe.com/mxml/2009"
+		width="30" height="30">
+	<fx:Metadata>[HostComponent("spark.components.ToggleButton")]</fx:Metadata>
+	<s:states>
+		<s:State name="up"/>
+		<s:State name="over"/>
+		<s:State name="down"/>
+		<s:State name="disabled"/>
+		<s:State name="upAndSelected"/>
+		<s:State name="overAndSelected"/>
+		<s:State name="downAndSelected"/>
+		<s:State name="disabledAndSelected"/>
+	</s:states>
+	<s:Rect x="1" y="1" width="29" height="29" alpha="0.5" radiusX="6">
+		<s:fill>
+			<s:SolidColor color="#000000"/>
+		</s:fill>
+	</s:Rect>
+	<s:BitmapImage x="0" y="0" smooth="true" source="@Embed('/assets/images/immovable.png')"
+				   visible.disabled="false"
+				   visible.down="false"
+				   visible.over="false"
+				   visible.up="false"/>
+	<s:BitmapImage x="0" y="0" smooth="true" source="@Embed('/assets/images/movable.png')"
+				   visible.disabledAndSelected="false"
+				   visible.downAndSelected="false"
+				   visible.overAndSelected="false"
+				   visible.upAndSelected="false"/>
+	<s:BitmapImage x="0" y="0" smooth="true" source="@Embed('/assets/images/movable_disable.png')"
+				   visible.disabled="false"
+				   visible.disabledAndSelected="false"
+				   visible.down="false"
+				   visible.downAndSelected="false"
+				   visible.over="false"
+				   visible.overAndSelected="false"
+				   visible.up="false"
+				   visible.upAndSelected="false"/>
+</s:Skin>

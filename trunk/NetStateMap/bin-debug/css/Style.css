@@ -1,0 +1,62 @@
+/* CSS file */
+@namespace s "library://ns.adobe.com/flex/spark";
+@namespace mx "library://ns.adobe.com/flex/mx";
+@namespace spark "mx.skins.spark.*";
+
+s|Application{
+	
+}
+
+/**
+自定义ApplicationSkin
+controlBarContent
+*/
+#topGroup {
+	color: #000000;
+}
+
+/**
+自定义弹出窗
+*/
+.zjTitleWin{
+	background-color:#000000;
+ 	background-alpha:0.7;
+}
+mx|ToolTip {
+	backgroundColor: black;
+	backgroundAlpha: 0.8;
+	cornerRadius: 4;
+	color: white;
+	fontSize: 12;
+}
+
+.mapContainer{
+	backgroundImage:Embed(source="/images/water.gif");
+	backgroundSize:"100%";
+}
+
+
+
+
+.MapNavSlider{
+	/*trackColors:#EEEEEE,#FFFFFF;*/
+	
+	/*trackSkin: ClassReference("MapNav.MapNavSliderTrackSkin");*/
+
+	thumbDisabledSkin: Embed(source="images/skin/map_SliderThumb_upSkin.png");
+	thumbDownSkin: Embed(source="images/skin/map_SliderThumb_upSkin.png");
+	thumbOverSkin: Embed(source="images/skin/map_SliderThumb_upSkin.png");
+	thumbUpSkin: Embed(source="images/skin/map_SliderThumb_upSkin.png");
+
+	/*trackSkin: Embed(source="/skin/images/map_SliderTrack_Skin.png");*/
+}
+
+.MapNavVSlider{
+	thumbDisabledSkin: Embed(source="images/skin/map_VSliderThumb_upSkin2.png");
+	thumbDownSkin: Embed(source="images/skin/map_VSliderThumb_upSkin2.png");
+	thumbOverSkin: Embed(source="images/skin/map_VSliderThumb_upSkin2.png");
+	thumbUpSkin: Embed(source="images/skin/map_VSliderThumb_upSkin2.png");
+	
+	trackSkin:Embed(source="images/skin/map_VSliderTrack_Skin2.png");/*透明*/
+}
+

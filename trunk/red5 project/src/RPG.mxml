@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600" 
+			   creationComplete="init()">
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			
+			import mx.controls.Alert;
+			
+			private var person:Person;
+			
+			function init(){
+				
+				person=new Person();
+				
+			
+				this.addElement(person);
+				
+				
+				this.addEventListener(MouseEvent.CLICK,setStageFocus);
+				this.addEventListener(KeyboardEvent.KEY_DOWN,personMove_direction);
+				
+				this.addEventListener(KeyboardEvent.KEY_UP,personMove_coordinate);
+
+
+
+			}
+			
+			private function setStageFocus(evt:MouseEvent):void{
+				this.setFocus();
+
+			}
+			//响应keyup事件   
+			private function personMove_direction(evt:KeyboardEvent):void   
+			{   
+				var keycode:int=evt.keyCode;
+				
+				trace(keycode+" ")
+				
+				switch(keycode){
+					//上
+					case 38:
+						person.changeMoveState("up");
+						
+						person.y-=5;
+						
+						break;
+					
+					//下
+					case 40:
+						person.changeMoveState("down");
+						
+						person.y+=5;
+						break;
+					
+					//左
+					case 37:
+						person.changeMoveState("left");
+						
+						person.x-=5;
+						break;
+					
+					//右
+					case 39:
+						person.changeMoveState("right");
+						
+						person.x+=5;
+						break;
+				}
+
+			}   
+			
+			private function personMove_coordinate(evt:KeyboardEvent):void{
+				
+			}
+
+		]]>
+	</fx:Script>
+	
+	
+
+
+</s:Application>

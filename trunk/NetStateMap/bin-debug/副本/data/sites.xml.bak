@@ -1,0 +1,17 @@
+<sites>
+	<site id="cn" cn="中国" en="China" pos="2353,463" state="1"/>
+	<site id="kp" cn="韩国" en="R.O.Korea" pos="2389,421" state="1"/>
+	<site id="kr" cn="朝鲜" en="D.P.R.Korea" pos="2364,385" state="1"/>
+	<site id="jp" cn="日本" en="Japan" pos="2464,241" state="1"/>
+	<site id="kh" cn="柬埔寨" en="Cambodia" pos="2254,637" state="1"/>
+	<site id="vn" cn="越南" en="Vietnam" pos="2249,554" state="1"/>  
+	<site id="la" cn="老挝" en="Laos" pos="2230,572" state="1"/>  
+	<site id="mm" cn="缅甸" en="Myanmar" pos="2170,552" state=""/>
+	<site id="th" cn="泰国" en="Thailand" pos="2211,610" state="1"/>
+	<site id="my" cn="马来西亚" en="Malaysia" pos="2237,714" state="1"/>
+	<site id="in" cn="印度" en="India" pos="2036,527" state="1"/>
+	<site id="ir" cn="伊朗" en="Iran" pos="1830,454" state="1"/>
+	<site id="af" cn="阿富汗" en="Afghanistan" pos="1920,443" state="1"/>
+	<site id="pk" cn="巴基斯坦" en="Pakistan" pos="1959,474" state="1"/> 
+	
+</sites>

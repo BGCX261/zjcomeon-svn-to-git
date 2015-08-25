@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" width="400" height="300">
+	<s:layout>
+		<s:BasicLayout/>
+	</s:layout>
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+	</fx:Declarations>
+	
+	
+	<s:controlBarContent>
+		<mx:ProgressBar id="loadBar" mode="event" indeterminate="true" labelPlacement="center" width="100" height="20" 
+						label="loading..."
+						horizontalCenter="0" verticalCenter="0" includeInLayout="false" visible="false"
+						/>
+		<s:TextInput id="userName" width="100"/>
+		<s:Button id="onconnBtn" label="登录" click="onConn()"/>
+		<s:Button id="disconnBtn" label="退出" click="disConn()" includeInLayout="false"/>
+	</s:controlBarContent>
+	
+	<s:List id="clientList" width="100%" height="100%"  dataProvider="{usersArrayCollection}" labelField="userName"/>
+
+</s:TitleWindow>

@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" 
+			   width="100%" height="100%"
+			   creationComplete="init()"		
+			   >
+	
+	<s:layout>
+		<s:BasicLayout/>
+	</s:layout>
+	
+	
+	<fx:Style>
+		@namespace s "library://ns.adobe.com/flex/spark";
+		@namespace mx "library://ns.adobe.com/flex/halo";
+		
+	</fx:Style>
+	
+	
+	
+	<fx:Script source="sos.as"/>
+	<fx:Script>
+		<![CDATA[
+			import UI_Model.mainUI;
+			
+			import User_Model.UserModel;
+			import User_Model.UserOtherModel;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.events.ResizeEvent;
+			
+			private var nc:NetConnection;
+			
+			private var userSO:SharedObject;
+			
+			private var _mainUI:mainUI;
+			
+			private var _thisUserName:String;
+			//用户模型
+			private var _user_model:UserModel;
+			//用户模型下标
+			private var _user_model_index:int;
+			
+			private var _user_other_model:UserModel;
+			//用户集合(不包含当前用户)
+			private var userModelArrayCollection:ArrayCollection=new ArrayCollection();
+			
+			
+			//用户列表集合
+			private var usersArrayCollection:ArrayCollection=new ArrayCollection();
+			
+			//断开连接
+			private function disConn():void{
+				if(nc!=null){
+					nc.close();
+					nc=null;
+				}
+				changeControllBar(3);
+				
+				//移除用户模型
+				removeUserModel();
+			}
+			
+			private function onConn():void{
+				changeControllBar(2);
+				
+				nc=new NetConnection();
+				nc.addEventListener(NetStatusEvent.NET_STATUS,netStatus);
+				nc.connect("rtmp://localhost/zjChat",userName.text,200,200);
+				
+				nc.client=this;	
+				
+				_thisUserName=userName.text;
+				
+			}
+			
+			private function netStatus(e:NetStatusEvent):void{
+				
+				switch(e.info.code){
+					//地址错误
+					case "NetConnection.Connect.Failed":
+						Alert.show("Failed");
+						break;
+					
+					//连接成功
+					case "NetConnection.Connect.Success":
+						
+						
+						
+						//按钮区切换
+						changeControllBar(1);
+						
+						
+						
+						//加入房间
+						joinRoom();
+						
+						
+						
+						/* userSO = SharedObject.getRemote("userSharedObj", nc.uri, false);
+						userSO.connect(nc);
+						userSO.addEventListener(SyncEvent.SYNC, _ballSOSyncHandler);
+						userSO.client=this; */
+						
+						
+						//建立模型,创建共享对象
+						addUserModel();
+						
+						
+						
+						break;
+					
+					//关闭
+					case "NetConnection.Connect.Closed":
+						Alert.show("close");
+						break;
+					
+					//拒绝
+					case "NetConnection.Connect.Rejected":
+						Alert.show("Rejected");
+						break;
+					
+				}
+			}
+			
+			private function result(e:Object):void{
+				Alert.show(e.toString());
+			}
+			
+			
+			
+			
+			
+			//加入房间
+			private function joinRoom():void{
+				var res:Responder=new Responder(result);
+				nc.call("clientLogin",res);
+			}
+			
+			//客户列表更新
+			public function sendAllClientList(re:Object):void{
+				usersArrayCollection.source=re as Array;
+				
+				
+				for(var i:int=0;i<usersArrayCollection.length;i++){
+					var user:Object=usersArrayCollection.getItemAt(i);
+					//trace(user.userName,user.x,user.y)
+					if(user.userName==_thisUserName){
+						
+						//trace(userModelArrayCollection.getItemAt(i))
+						
+					}else{
+						//添加其他用户模型
+						addUserOtherModel(user);
+					} 
+					
+				}
+				
+			}
+			
+			
+			
+			//删除离开用户模型
+			public function removeClientModel(re:Object):void{
+				trace("用户离开，移除",re.toString())
+				
+				var m:UserModel=_mainUI.getChildByName(re.toString()) as UserModel;
+				_mainUI.removeChild(m);
+			}
+			
+			private function _ballSOSyncHandler(e:SyncEvent):void{
+				
+				
+				//trace(userSO.data.x)
+				
+				//TweenMax.to(_user_model,2,{x:userSO.data.x,y:userSO.data.y});
+				
+				//_user_model.x=userSO.data.x;
+				//_user_model.y=userSO.data.y;
+				
+				
+				
+			}
+			
+			private function init():void{
+				//建立场景
+				createStage();
+				
+			}
+			private function createStage():void{
+				_mainUI=new mainUI(this.width,this.height);
+				mainPanel.addElement(_mainUI);
+				//mainPanel.setChildIndex(userList,this.numChildren-1);  
+				
+				mainPanel.addEventListener(ResizeEvent.RESIZE,resizeStageSize);
+				
+			}
+			
+			private function resizeStageSize(e:ResizeEvent):void{
+				
+				_mainUI.changeStageSize(e.currentTarget.width,e.currentTarget.height);
+			}
+			private function userListStartDrag(e:MouseEvent):void{
+				//userList.startDrag();
+				//userList.addEventListener(MouseEvent.MOUSE_UP,userListStopDrag);
+			}
+			private function userListStopDrag(e:MouseEvent):void{
+				//userList.stopDrag();
+				//userList.removeEventListener(MouseEvent.MOUSE_UP,userListStopDrag);
+				
+				//var xy={x:tw.x,y:tw.y}
+				
+				//nc.call("setballxy", null, tw.x,tw.y);
+			}
+			
+			
+			private function sendMessage():void{
+				nc.call("sendMessage",null,userMessage.text);
+				
+				_user_model.setNewMessage(userMessage.text);
+				
+				
+				this.userMessage.text="";	
+			}
+			
+			public function sendOtherClientMsg(re:Object):void{
+				usersArrayCollection.source=re as Array;
+				
+				
+				for(var i:int=0;i<usersArrayCollection.length;i++){
+					var user:Object=usersArrayCollection.getItemAt(i);
+					
+					var m:UserModel=_mainUI.getChildByName(user.userName) as UserModel;
+					
+					if(m.userName!=_thisUserName){
+						trace(user.userName,"说话",user.userMessage)
+						m.setNewMessage(user.userMessage);
+					}
+				}
+			}
+			
+			//更新用户坐标
+			public function updateUserModelXY(re:Object):void{
+				
+				usersArrayCollection.source=re as Array;
+				
+				
+				for(var i:int=0;i<usersArrayCollection.length;i++){
+					var user:Object=usersArrayCollection.getItemAt(i);
+					
+					
+					var m:UserModel=_mainUI.getChildByName(user.userName) as UserModel;
+					
+					
+					if(m.userName!=_thisUserName){
+						trace(user.userName,user.x,user.y)
+						var np:Point=new Point(user.x,user.y);
+						TweenMax.to(m,2,{x:np.x,y:np.y});
+					}
+				}
+			}
+		]]>
+	</fx:Script>
+	
+	
+	
+	
+	
+	
+	<s:Panel id="mainPanel" width="100%" height="100%">
+		
+		
+		<s:controlBarContent>
+			<s:TextInput id="userMessage" enabled="false"/>
+			<s:Button id="sendMsgBtn" label="发送" click="sendMessage()" enabled="false"/>
+		</s:controlBarContent>
+		
+	</s:Panel>
+	
+	<s:TitleWindow id="userList" title="用户列表" width="200" height="200"  enabled="true" x="0" y="0" alpha="0.6">
+		<s:layout>
+			<s:VerticalLayout/>
+		</s:layout>
+		<s:List id="clientList" width="100%" height="100%"  dataProvider="{usersArrayCollection}" labelField="userName"/>
+		
+		<s:controlBarLayout>
+			<s:HorizontalLayout verticalAlign="middle" horizontalAlign="center"/>
+		</s:controlBarLayout>
+		<s:controlBarContent>
+			<mx:ProgressBar id="loadBar" mode="event" indeterminate="true" labelPlacement="center" width="100" height="20" 
+							label="loading..." visible="false" includeInLayout="false"
+							/>
+			<s:TextInput id="userName" width="100" x="24" y="209"/>
+			<s:Button id="onconnBtn" label="登录" click="onConn()" x="187" y="212"/>
+			<s:Button id="disconnBtn" label="退出" click="disConn()" includeInLayout="false"/>
+		</s:controlBarContent>
+		
+	</s:TitleWindow>
+
+</s:Application>
+

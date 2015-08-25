@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="horizontal" 
+	xmlns:efflex="org.efflex.mx.viewStackEffects.*"
+	creationComplete="init()">
+	
+	<mx:Style source="css/main.css"/>
+	<mx:Script>
+		<![CDATA[
+			import mx.events.ItemClickEvent;
+			import mx.controls.Alert;
+			import flash.net.NetConnection
+			import mx.collections.ArrayCollection;
+			
+			private var nc:NetConnection;
+			
+			private var usersArrayCollection:ArrayCollection=new ArrayCollection(); 
+			
+			import mx.rpc.events.ResultEvent;  
+
+			import mx.rpc.events.FaultEvent;  
+            import mx.rpc.remoting.mxml.RemoteObject;  
+
+			private var myHandler: RemoteObject;
+			
+			//初始化状态
+			private function init():void{
+
+				msgText.addEventListener(KeyboardEvent.KEY_DOWN,sendMsg_enter);
+			}
+			
+			private function result(e:Object):void{
+				Alert.show(e.toString());
+			}
+			
+			//断开连接
+			private function disConn():void{
+				if(nc!=null){
+					nc.close();
+					nc=null;
+					viewStackMain.selectedChild=this.loginPanel;
+				}
+			}
+			
+			//建立连接
+			private function onConn():void{
+				
+				//Security.loadPolicyFile("http://localhost:8000/zjChat/crossdomain.xml");
+
+
+				nc=new NetConnection();
+				nc.addEventListener(NetStatusEvent.NET_STATUS,netStatus);
+				nc.connect("rtmp://localhost/zjChat",clientName.text);
+				
+				nc.client=this;	
+			}
+			
+			private function netStatus(e:NetStatusEvent):void{
+				switch(e.info.code){
+					//地址错误
+					case "NetConnection.Connect.Failed":
+						Alert.show(e.info.application,"地址错误");
+						viewStackMain.selectedChild=this.loginPanel;
+					break;
+					
+					//连接成功
+					case "NetConnection.Connect.Success":
+						joinRoom();
+						
+						viewStackMain.selectedChild=this.mainPanel;
+													           
+
+					break;
+					
+					//关闭
+					case "NetConnection.Connect.Closed":
+						Alert.show(e.info.application,"关闭");
+						viewStackMain.selectedChild=this.loginPanel;
+					break;
+					
+					//拒绝
+					case "NetConnection.Connect.Rejected":
+						Alert.show(e.info.application,"被拒绝");
+						viewStackMain.selectedChild=this.loginPanel;
+					break;
+					
+				}
+			}
+			
+
+			
+			//加入房间
+			private function joinRoom():void{
+				var res:Responder=new Responder(result);
+				nc.call("clientLogin",res);
+			}
+			
+			//客户列表更新
+			public function sendAllClientList(re:Object):void{
+				usersArrayCollection.source=re as Array;
+			}
+			//客户状态更新
+			public function sendAllClientStatus(re:Object):void{
+				clientStatus.text=re.toString();
+			}
+			
+			//更新聊天内容
+			public function sendAllClientMsg(re:Object):void{
+				allMsg.text+=re.toString()+"\n";
+			}
+			
+			//发送聊天
+			public function sendMsg_enter(evt:KeyboardEvent):void{
+				
+				if(evt.keyCode==13){
+					nc.call("sendMessage",null,this.msgText.text);
+					this.msgText.text="";
+				}
+				
+			}
+			public function sendMsg():void{
+				nc.call("sendMessage",null,this.msgText.text);
+				this.msgText.text="";		
+			}
+			
+			private function getClickClient(e:Event):void{
+				var cid:String=e.currentTarget.selectedItem.userId;
+				
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<efflex:Grid id="effect" transparent="true" duration="700" modal="true" modalTransparencyColor="0xcccccc"/>
+
+	<mx:ViewStack id="viewStackMain" width="600" height="300" creationPolicy="all">
+		<mx:Panel id="loginPanel" title="login" layout="horizontal" width="300" height="300" verticalAlign="middle" horizontalAlign="center"
+			showEffect="effect" hideEffect="effect"
+			>
+			<mx:Label text="登录名:"/><mx:TextInput id="clientName"/>
+			<mx:ControlBar>
+				<mx:Button label="登录" click="onConn()"/>
+			</mx:ControlBar>
+			
+		</mx:Panel>
+		
+		<mx:HBox id="mainPanel" width="600" height="300" showEffect="effect" hideEffect="effect">
+			<mx:Panel title="List" width="20%" height="100%">
+				<mx:VDividedBox height="100%" width="100%">
+					<mx:List width="100%" height="80%" id="clientList" dataProvider="{usersArrayCollection}" labelField="userName" itemDoubleClick="getClickClient(event)" doubleClickEnabled="true"/>
+					<mx:TextArea width="100%" height="20%" id="clientStatus"/>
+				</mx:VDividedBox>
+			</mx:Panel>
+	
+			<mx:Panel title="List" width="80%" height="100%">
+			
+				<mx:VDividedBox height="100%" width="100%">
+					<mx:TextArea width="100%" height="75%" id="allMsg" editable="false"/>
+		
+					<mx:TextInput width="100%" height="25%" id="msgText"/>
+				</mx:VDividedBox>
+				
+				<mx:ControlBar horizontalAlign="right">
+					<mx:Button label="关闭" click="disConn()"/>
+					<mx:Button label="发送" click="sendMsg()"/>
+				</mx:ControlBar>
+			</mx:Panel>
+		</mx:HBox>
+	</mx:ViewStack>
+	
+</mx:Application>

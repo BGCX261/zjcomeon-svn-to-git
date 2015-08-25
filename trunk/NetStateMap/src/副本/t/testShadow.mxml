@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600"
+			   
+			   creationComplete="init()" xmlns:internals="org.flexunit.experimental.theories.internals.*" 
+			   >
+	<s:layout>
+		<s:BasicLayout/>
+	</s:layout>
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.greensock.TweenLite;
+			import com.greensock.TweenMax;
+			import com.greensock.plugins.TweenPlugin;
+			
+			import flash.filters.BevelFilter;
+			import flash.filters.BitmapFilterQuality;
+			import flash.filters.BitmapFilterType;
+			import flash.filters.DropShadowFilter;
+			
+			
+			private var filter:DropShadowFilter;
+			
+			private var bevel:BevelFilter;
+			
+			private var sprite:Sprite;
+			
+			private var _distance:Number = 10;
+			
+			
+			private var sc:Number = 1;
+			
+			private var np:Point = new Point(0,0);
+			
+			private function init():void{
+				
+				TweenPlugin.activate([TransformAroundPointPlugin]);
+				
+				
+				sprite=new Sprite();
+				sprite.graphics.lineStyle(2);
+				sprite.graphics.beginFill(0xffff00);
+				sprite.graphics.drawRect(0,0,100,100);
+				sprite.graphics.endFill();
+				sprite.x=200;
+				sprite.y=200;
+				uic.addChild(sprite);
+				
+				
+				/* 
+				var ts:Sprite = new Sprite;
+				ts.cacheAsBitmap = true;
+				
+				ts.graphics.beginFill(0xcccccc);
+				ts.graphics.drawRect(0,0,100,100);
+				ts.graphics.endFill();
+				
+				
+				
+				var matr:Matrix = new Matrix();
+				matr.a=1;
+				matr.b=0;
+				matr.c=-120*Math.PI/180;
+				matr.d=1;
+				
+				matr.tx=410;
+				matr.ty=200;
+				ts.transform.matrix=matr;
+				
+			
+				uic.addChild(ts); */
+				
+				this.doubleClickEnabled= true;
+				this.addEventListener(MouseEvent.DOUBLE_CLICK,setPoint);
+				
+				
+				this.addEventListener(MouseEvent.MOUSE_WHEEL,setScale);
+				
+				/* filter=new DropShadowFilter(0,0,0,1,20,20,.3);
+				
+				bevel = new BevelFilter();
+				
+				
+				bevel.distance = 65; 
+				bevel.angle = 45; 
+				bevel.highlightColor = 0xFFFF00; 
+				bevel.highlightAlpha = 0.8; 
+				bevel.shadowColor = 0x666666; 
+				bevel.shadowAlpha = 0.8; 
+				bevel.blurX = 5; 
+				bevel.blurY = 5; 
+				bevel.strength = 35; 
+				bevel.quality = BitmapFilterQuality.HIGH; 
+				bevel.type = BitmapFilterType.OUTER; 
+				bevel.knockout = false; 
+				
+				sprite.filters=[bevel];
+				 */
+				
+				
+				//addEventListener(Event.ENTER_FRAME,onEnterFrame);
+			}
+			
+			private function setPoint(evt:MouseEvent):void{
+				
+				ptxt.text = mouseX+","+mouseY;
+				
+				np.x=mouseX;
+				np.y=mouseY;
+			}
+			
+			private function setScale(evt:MouseEvent):void{
+
+				var mod:Number = 20;
+				
+				var omx:Number = sprite.mouseX;
+				var omy:Number = sprite.mouseY;
+				
+				sprite.scaleX += evt.delta/100;
+				sprite.scaleY += evt.delta/100;
+				sprite.x -= omx*evt.delta/100;
+				sprite.y -= omy*evt.delta/100; 
+				trace(omx,omy)
+				
+				
+				/* if (e.delta > 0)
+				{
+				e.currentTarget.scaleX += 0.1;
+				e.currentTarget.scaleY += 0.1;
+				e.currentTarget.x=mouseX-e.localX*(e.currentTarget.scaleX);
+				e.currentTarget.y=mouseY-e.localY*(e.currentTarget.scaleY);
+				}
+				else
+				{
+				e.currentTarget.scaleX -= 0.1;
+				e.currentTarget.scaleY -= 0.1;
+				e.currentTarget.x=mouseX-e.localX*(e.currentTarget.scaleX);
+				e.currentTarget.y=mouseY-e.localY*(e.currentTarget.scaleY);
+				} */
+				
+				/* if(evt.delta>0){
+					sc += 0.1;
+					trace(sc)
+					TweenLite.to(sprite, 1, {
+						transformAroundPoint:{point: new Point(evt.localX,evt.localY), scaleX:sc, scaleY:sc}
+					});
+				}else{
+					sc -= 0.1;
+					trace(sc)
+					TweenLite.to(sprite, 1, {
+						transformAroundPoint:{point: new Point(evt.localX,evt.localY), scaleX:sc, scaleY:sc}
+					});
+				} */
+
+				
+					
+				/* var mod:Number = 20;
+				sprite.scaleX += evt.delta / mod;
+				sprite.scaleY += evt.delta / mod;
+				sprite.x = ((2 * mouseX) - (2 * (evt.localX * sprite.scaleX))) / 2;
+				sprite.y = ((2 * mouseY) - (2 * (evt.localY * sprite.scaleY))) / 2; */
+			}
+			
+			private function onEnterFrame(event:Event):void {
+				var dx:Number=mouseX-sprite.x;
+				var dy:Number=mouseY-sprite.y;
+				filter.distance=-Math.sqrt(dx*dx+dy*dy)/10;
+				filter.angle=Math.atan2(dy,dx)*180/Math.PI;
+				
+			}
+		]]>
+	</fx:Script>
+	
+	
+	
+	<s:controlBarContent>
+		<s:TextInput id="ptxt"/>
+		<s:Button label="set" click="setScale(null)"/>
+		<s:Button label="reset" click="{sprite.scaleX=sprite.scaleY=1}"/>
+	</s:controlBarContent>
+
+	
+	<mx:UIComponent id="uic">
+		
+		
+	</mx:UIComponent>
+</s:Application>

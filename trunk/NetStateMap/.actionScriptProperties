@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<actionScriptProperties analytics="false" mainApplicationPath="NetStateMap.mxml" projectUUID="9851016f-27e5-44ce-bf00-56b53dc69e17" version="6">
+  <compiler additionalCompilerArguments="-locale zh_CN" autoRSLOrdering="true" copyDependentFiles="true" fteInMXComponents="false" generateAccessible="true" htmlExpressInstall="true" htmlGenerate="true" htmlHistoryManagement="true" htmlPlayerVersionCheck="true" includeNetmonSwc="false" outputFolderPath="bin-debug" sourceFolderPath="src" strict="true" targetPlayerVersion="0.0.0" useApolloConfig="false" useDebugRSLSwfs="true" verifyDigests="true" warn="true">
+    <compilerSourcePath/>
+    <libraryPath defaultLinkType="0">
+      <libraryPathEntry kind="4" path="">
+        <excludedEntries>
+          <libraryPathEntry kind="3" linkType="1" path="${PROJECT_FRAMEWORKS}/libs/flex.swc" useDefaultLinkType="false"/>
+        </excludedEntries>
+      </libraryPathEntry>
+      <libraryPathEntry kind="1" linkType="1" path="libs"/>
+      <libraryPathEntry kind="3" linkType="1" path="/zjSkin/bin/zjSkin.swc" useDefaultLinkType="false"/>
+    </libraryPath>
+    <sourceAttachmentPath/>
+  </compiler>
+  <applications>
+    <application path="副本/t/line.mxml"/>
+    <application path="副本/t/pathText.mxml"/>
+    <application path="副本/t/_NetStateMap.mxml"/>
+    <application path="副本/t/testShadow.mxml"/>
+    <application path="副本/t/textMarkList.mxml"/>
+    <application path="副本/t/testNav.mxml"/>
+    <application path="副本/t/ptop.mxml"/>
+    <application path="副本/t/test.mxml"/>
+    <application path="NetStateMap.mxml"/>
+    <application path="副本/t/degrafa_map.mxml"/>
+  </applications>
+  <modules/>
+  <buildCSSFiles/>
+</actionScriptProperties>

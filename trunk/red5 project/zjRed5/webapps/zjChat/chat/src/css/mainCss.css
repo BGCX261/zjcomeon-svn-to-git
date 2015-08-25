@@ -1,0 +1,10 @@
+/* CSS file */
+Application{
+	fontSize:12;
+color:#ff0000;
+}
+.ListAndMessageZoomImg{
+	/*backgroundImage:Embed(source='image/zoom.gif');*/
+}
+.priMsgAndpubMsgZoomImg{
+}

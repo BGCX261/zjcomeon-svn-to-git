@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600"
+			   
+			   creationComplete="init()" 
+			   >
+	<s:layout>
+		<s:BasicLayout/>
+	</s:layout>
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+	</fx:Declarations>
+	
+	
+	<fx:Script>
+		<![CDATA[
+			import SVGRender.SVGToGeometry;
+			
+			import com.degrafa.Surface;
+			
+			import mx.controls.Alert;
+			
+			
+			private var surface:Surface;
+			public function init():void{
+				
+				var request:URLRequest=new URLRequest("data/BlankMap-World_gray.svg");			
+				var loaderSVG:URLLoader=new URLLoader(request);			
+				loaderSVG.addEventListener(Event.COMPLETE, procesarSVG);	
+				loaderSVG.addEventListener(IOErrorEvent.IO_ERROR, errorOnChargeFile);			
+				
+				
+				
+			}
+			private function mapStartDrap(evt:MouseEvent):void{
+
+				surface.addEventListener(MouseEvent.MOUSE_UP,mapStopDrag);
+
+					surface.startDrag(false);
+				
+			}
+			private function mapStopDrag(evt:MouseEvent):void{
+	
+				surface.stopDrag();
+				
+				//trace(my.x,my.y);
+				surface.removeEventListener(MouseEvent.MOUSE_UP,mapStopDrag);
+			}
+			
+			private function procesarSVG(e:Event):void{			
+				var xmlSVG: XML = new XML(e.target.data);	
+				var dibujador:SVGToGeometry=new SVGToGeometry();
+				surface = dibujador.cargar(xmlSVG);
+				this.addElement(surface);
+				
+				surface.addEventListener(MouseEvent.MOUSE_DOWN,mapStartDrap);
+				
+			}
+			
+			public function errorOnChargeFile(e:IOErrorEvent):void{
+				Alert.show("error al cargar el archivo");
+				trace(e.text);
+			}			
+			
+		]]>
+	</fx:Script>
+	
+	
+</s:Application>

@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" width="500" height="200"
+			   
+			   title="连接目标设置"
+			   skinClass="zjMap.skin.zjTitleWinSkin"
+			   styleName="zjTitleWin"
+			   close="closeM2MWin(false)" 
+			   
+			   showEffect="{showEff}"
+			   hideEffect="{hideEff}"
+			   
+			   visible="false"
+			   >
+	<s:layout>
+		<s:HorizontalLayout/>
+	</s:layout>
+	
+	<fx:Declarations>
+		<s:Parallel id="showEff">
+			<s:Rotate3D angleYFrom="-90" angleYTo="0" />
+			<s:Fade alphaFrom="0.0" alphaTo="1.0" />
+		</s:Parallel>
+		
+		<s:Parallel id="hideEff">
+			<s:Rotate3D angleYFrom="0" angleYTo="-90" />
+			<s:Fade alphaFrom="1.0" alphaTo="0.0" />
+		</s:Parallel>
+	</fx:Declarations>
+	
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.managers.PopUpManager;
+			import mx.validators.Validator;
+			
+			import spark.skins.spark.FormHeadingSkin;
+			import spark.skins.spark.FormItemSkin;
+			import spark.skins.spark.FormSkin;
+			import spark.skins.spark.StackedFormHeadingSkin;
+			import spark.skins.spark.StackedFormItemSkin;
+			import spark.skins.spark.StackedFormSkin;
+			
+			import zjMap.skin.zjTitleWinSkin;
+			
+			public function closeM2MWin(val:Boolean):void{
+				//PopUpManager.removePopUp(this);
+
+				if(val){
+					
+					this.visible = true;
+				}else{
+					this.visible = false;
+					
+					this.parentApplication.showHideConnectMaskLayer(false);
+				}
+				
+				
+				
+				
+			}
+			
+			
+			
+			/**
+			 * 初始化目标标记列表
+			 * */
+			[Binable]
+			private var ds:ArrayCollection = new ArrayCollection();
+			public function init_TargetMarkList(mlst:Array):void{
+				
+				ds.source = mlst;
+		
+			}
+			
+			
+			/**
+			 * 目标数据坐标
+			 * */
+			private var _targetObj:Object;
+			
+			/**
+			 * 获取选中的目标标记,发送请求
+			 * */
+			private function connectTargetMark():void{
+				var item:Object = targetMarklist.selectedItem;
+				if(item){
+					
+					_targetObj = item;
+					
+				
+					this.parentApplication.connectLine(null,item.pos,true);
+				}
+				
+			}
+			
+			public function get targetObj():Object
+			{
+				return _targetObj;
+			}
+
+			/**
+			 * @private
+			 */
+			public function set targetObj(value:Object):void
+			{
+				_targetObj = value;
+			}
+
+			
+		]]>
+	</fx:Script>
+	
+	
+	<s:HGroup width="100%" height="100%" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10">
+		<s:List id="targetMarklist" dataProvider="{ds}" labelField="cn" height="100%" itemRenderer="zjMap.module.M2M_Item">
+			<s:layout>
+				<s:TileLayout requestedColumnCount="3" requestedRowCount="0" horizontalGap="10" verticalGap="10"/>
+			</s:layout>
+		</s:List>
+
+	</s:HGroup>
+	
+	<s:controlBarContent>
+		<s:Button label="连接" click="connectTargetMark()"/>
+	</s:controlBarContent>
+</s:TitleWindow>

@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600"
+			   
+			   creationComplete="init()"
+			   
+			   skinClass="zjMap.skin.myApplicationSkin" xmlns:degrafa="http://www.degrafa.com/2007"
+			   >
+	<s:layout>
+		<s:BasicLayout/>
+	</s:layout>
+	<fx:Script>
+		<![CDATA[
+			import zjMap.skin.MoveToggleBtnSkin;
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+	</fx:Declarations>
+	
+	<fx:Style source="css/Style.css"/>
+	<fx:Script>
+		<![CDATA[
+			import com.greensock.TweenLite;
+			import com.greensock.TweenMax;
+			
+			import mx.collections.ArrayCollection;
+			import mx.managers.PopUpManager;
+			
+			import spark.components.List;
+			
+			import zjMap.MapMark.ConnectMaskLayer;
+			import zjMap.MapMark.MapMarkList;
+			import zjMap.MapMark.MarkLegend;
+			import zjMap.MapTool.MarkMove;
+			import zjMap.MapTool.MarkToConnect;
+			import zjMap.module.M2MWin;
+			
+			
+			private var lstdata:ArrayCollection = new ArrayCollection();
+			private var markerDataArray:Array = new Array();
+			
+			private var lst:List;
+			
+			private var dishMask:ConnectMaskLayer;
+			
+			public function init():void{
+				
+				for(var i:int=0;i<30;i++){
+					var obj:Object = new Object();
+					obj.id = i;
+					obj.cn = "cn-"+i;
+					obj.en = "en-"+i
+					obj.pos = "100,200"
+				
+					markerDataArray.push(obj);
+					
+					lstdata.addItem(obj);
+				}
+
+				var markList:MapMarkList = new MapMarkList(markerDataArray,"站点列表");
+				markList.x = this.width - markList.width - 20;
+				markList.y = 50;
+				map_container.addElement(markList);
+				
+				markList.drawMarkerItem();
+				
+				
+				/* this.addEventListener(MouseEvent.MOUSE_DOWN,function(evt:MouseEvent):void{
+				
+					cursorManager.setCursor(CursorCloseHand);
+				});
+				
+				this.addEventListener(MouseEvent.MOUSE_UP,function(evt:MouseEvent):void{
+					
+					cursorManager.setCursor(CursorOpenHand);
+				}); */
+				
+				/*  lst = new List();
+				lst.width = 200;
+				lst.height = 300;
+				lst.dataProvider = lstdata;
+				lst.labelField = "cn";
+				map_container.addElement(lst); */
+				
+				var l:MarkLegend = new MarkLegend();
+				map_container.addElement(l);
+				l.y = 200;
+				l.x = 200;
+				
+				
+				init_btns();
+			}
+			
+			private function setListSize():void{
+				dishMask.setBgHeight(400)
+			}
+			
+			public function setCy(yy:String):void{
+				txt.text = yy
+			}
+			
+			private var btns:ArrayCollection = new ArrayCollection();
+			private function init_btns():void{
+				
+				var connWin:M2MWin = PopUpManager.createPopUp(this, M2MWin, false) as M2MWin;
+				PopUpManager.centerPopUp(connWin);
+				
+				connWin.closeM2MWin(true);
+				
+				connWin.init_TargetMarkList(markerDataArray);
+			}
+		]]>
+	</fx:Script>
+	
+	
+	<s:BorderContainer id="map_container" width="100%" height="100%" backgroundColor="0x98B2CB" borderVisible="false">
+		
+		<s:Button label="setSize" click="setListSize()" x="{this.width - 100}"/>
+		
+		<s:TextInput id="txt" x="100"/>
+		
+		<degrafa:Surface>
+			
+			<degrafa:GeometryGroup id="linemask_group" scaleX="1" scaleY="1" ></degrafa:GeometryGroup>
+			
+		</degrafa:Surface>	
+
+	</s:BorderContainer>
+		
+
+	
+</s:Application>

@@ -1,0 +1,21 @@
+<root>
+	<!--左 到 右 , 上 到 下-->
+	
+	<ocean x="63" y="43"  text="北冰洋"/>
+	
+	<ocean x="50" y="184"  text="北太平洋"/>
+	
+	<ocean x="127" y="390" text="南太平洋"/>
+	
+	<ocean x="320" y="230" text="北大西洋"/>
+	
+	<ocean x="430" y="400"  text="南大西洋"/>
+	
+	<ocean  x="700" y="378"  text="印度洋"/>
+	
+	<ocean x="820" y="20"  text="北冰洋"/>
+	
+	<ocean  x="925" y="218"  text="北太平洋"/>
+	
+	
+</root>

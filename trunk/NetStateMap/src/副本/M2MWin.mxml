@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" width="500" height="200"
+			   
+			   skinClass="zjMap.skin.zjTitleWinSkin"
+			    styleName="myTitleWin"
+			   close="closeM2MWin()" 
+			   >
+	<s:layout>
+		<s:BasicLayout/>
+	</s:layout>
+	
+	<fx:Declarations>
+	
+		<!--验证-->
+		<fx:Array id="valArr">
+			<mx:StringValidator source="{fromPoint}" property="text" required="true" requiredFieldError="必填项"/>
+			<mx:StringValidator source="{toPoint}" property="text" required="true" requiredFieldError="必填项"  />
+		</fx:Array>
+		
+		<!--动态颜色-->
+		<s:AnimateColor id="colorEffect"
+						colorPropertyName="contentBackgroundColor"
+						colorFrom="0xFFFFFF"
+						colorTo="0xFF0000"
+						repeatBehavior="reverse"
+						repeatCount="0"
+						duration="500" />
+	</fx:Declarations>
+	
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.managers.PopUpManager;
+			import mx.validators.Validator;
+			
+			import spark.skins.spark.FormHeadingSkin;
+			import spark.skins.spark.FormItemSkin;
+			import spark.skins.spark.FormSkin;
+			import spark.skins.spark.StackedFormHeadingSkin;
+			import spark.skins.spark.StackedFormItemSkin;
+			import spark.skins.spark.StackedFormSkin;
+			
+			import zjMap.skin.zjTitleWinSkin;
+			
+			private function closeM2MWin():void{
+				PopUpManager.removePopUp(this);
+				
+				//this.parentApplication.showHideDishMaskLayer(false);
+			}
+			
+			/**
+			 * form表单皮肤变化
+			 * stackForm 叠式
+			 * form 普通式
+			 * */
+			protected function cb_changeHandler(evt:Event):void {
+				var formCSS:CSSStyleDeclaration = styleManager.getStyleDeclaration("spark.components.Form");
+				var formHeadingCSS:CSSStyleDeclaration = styleManager.getStyleDeclaration("spark.components.FormHeading");
+				var formItemCSS:CSSStyleDeclaration = styleManager.getStyleDeclaration("spark.components.FormItem");
+				
+				if (cb.selected) {
+					formCSS.setStyle("skinClass", StackedFormSkin);
+					formHeadingCSS.setStyle("skinClass", StackedFormHeadingSkin);
+					formItemCSS.setStyle("skinClass", StackedFormItemSkin);
+				} else {
+					formCSS.setStyle("skinClass", FormSkin);
+					formHeadingCSS.setStyle("skinClass", FormHeadingSkin);
+					formItemCSS.setStyle("skinClass", FormItemSkin);
+				}
+			}
+			
+			protected function resetBtn_clickHandler(evt:MouseEvent):void {
+				fromPoint.text = "";
+				toPoint.text = "";
+
+				fromPoint.errorString = "";
+				toPoint.errorString = "";
+			}
+			
+			/**
+			 * 验证
+			 * */
+			protected function submitBtn_clickHandler(evt:MouseEvent):void {
+				Validator.validateAll(valArr);
+			}
+			
+			/**
+			 * 动态颜色提示
+			 * */
+			private function textInput_focusIn(evt:FocusEvent):void {
+				colorEffect.play([evt.currentTarget]);
+			}
+			
+			private function textInput_focusOut(evt:FocusEvent):void {
+				colorEffect.stop();
+				evt.currentTarget.setStyle("contentBackgroundColor", "white");
+			}
+		]]>
+	</fx:Script>
+	
+	<fx:Style>
+		@namespace s "library://ns.adobe.com/flex/spark";
+		@namespace mx "library://ns.adobe.com/flex/mx";
+		
+		
+		
+	</fx:Style>
+	<!--<s:Form defaultButton="{submitBtn}">
+		
+
+		<s:FormItem sequenceLabel="1." label="起始点:" color="0xffffff" required="true">
+			<s:helpContent>
+				<s:Label text="100,100" />
+			</s:helpContent>
+			<s:TextInput id="fromPoint" color="0x000000" focusIn="textInput_focusIn(event)" focusOut="textInput_focusOut(event)"/>
+		</s:FormItem>
+		
+		<s:FormItem sequenceLabel="2." label="目标点:" color="0xffffff">
+			<s:TextInput id="toPoint" color="0x000000"/>
+		</s:FormItem>
+		
+		<s:FormItem>
+			<s:layout>
+				<s:HorizontalLayout/>
+			</s:layout>
+			
+			<s:Button id="resetBtn" label="Reset" click="resetBtn_clickHandler(event);" />
+			<s:Button id="submitBtn" label="Submit" click="submitBtn_clickHandler(event);" />
+			
+			<s:CheckBox id="cb" label="Stacked forms?" change="cb_changeHandler(event);" />
+		</s:FormItem>
+
+	</s:Form>-->
+	
+</s:TitleWindow>

@@ -1,0 +1,47 @@
+<sites>
+	<site id="cn" cn="中国" en="China" pos="670,132" state="1" type="1"/>
+	
+	<site id="kp" cn="韩国" en="R.O.Korea" pos="686,117" state="1" type="3"/>
+	
+	<site id="jp" cn="日本" en="Japan" pos="708,119" state="1" type="4"/>
+	
+	<site id="gb" cn="英国" en="Britain" pos="394,80" state="1" type="3"/>
+	
+	<site id="fr" cn="法国" en="France" pos="406,95" state="1" type="1"/>
+	
+	<site id="ca" cn="加拿大" en="Canada" pos="174,75" state="1" type="4"/>
+	
+	<site id="us" cn="美国" en="France" pos="180,114" state="1" type="2"/>
+	
+	<site id="au" cn="澳大利亚" en="Australia" pos="697,255" state="1" type="1"/>
+	
+	<site id="th" cn="泰国" en="Thailand" pos="625,165" state="1" type="1"/>
+	
+	<site id="la" cn="老挝" en="Laos" pos="628,157" state="1" type="3"/>  
+	
+	<site id="mm" cn="缅甸" en="Myanmar" pos="615,154" state="" type="4"/>
+	
+	<site id="kh" cn="柬埔寨" en="Cambodia" pos="634,173" state="1" type="1"/>
+	
+	<site id="vn" cn="越南" en="Vietnam" pos="638,177" state="1" type="2"/>  
+	
+	
+	<site id="my" cn="马来西亚" en="Malaysia" pos="654,194" state="1" type="2"/>
+	
+	<site id="in" cn="印度" en="India" pos="571,145" state="1" type="3"/>
+	
+	<site id="ir" cn="伊朗" en="Iran" pos="523,133" state="1" type="4"/>
+	
+	<site id="af" cn="阿富汗" en="Afghanistan" pos="546,127" state="1" type="1"/>
+	
+	<site id="pk" cn="巴基斯坦" en="Pakistan" pos="559,132" state="1" type="2"/> 
+	
+	
+	<site id="id" cn="印度尼西亚" en="Indonesia" pos="630,208" state="1" type="2"/>  
+	
+	<site id="nz" cn="新西兰" en="NewZealand" pos="781,297" state="1" type="3"/>  
+	
+	<site id="ie" cn="爱尔兰" en="Ireland" pos="383,82" state="1" type="3"/>  
+	
+	
+</sites>

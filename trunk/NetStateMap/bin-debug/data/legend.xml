@@ -1,0 +1,6 @@
+<legends>
+	<legend desc="green" img="images/marker/marker_green_legend.png"/>
+	<legend desc="blue" img="images/marker/marker_blue_legend.png"/>
+	<legend desc="red" img="images/marker/marker_red_legend.png"/>
+	<legend desc="orange" img="images/marker/marker_orange_legend.png"/>	
+</legends>

@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<degrafa:GeometryGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					   xmlns:s="library://ns.adobe.com/flex/spark" 
+					   xmlns:mx="library://ns.adobe.com/flex/mx" 
+					   
+					   xmlns:degrafa="http://www.degrafa.com/2007" 
+					   xmlns:paint="com.degrafa.paint.*"
+					   xmlns:geometry="com.degrafa.geometry.*" xmlns:module="zjMap.module.*" 
+					   
+					   >
+	
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			
+			public function swtich_ocean_sea_isle(zoom:Number):void{
+				
+				if(zoom >=1 && zoom <= 2){
+					ocean.visible = true;
+				}else{
+					sea.visible = false;
+					isle.visible = false;
+				}
+				
+				/* if(zoom >2 && zoom <= 3){
+					sea.visible = true;
+				}else{
+					ocean.visible = false;
+					isle.visible = false;
+				}
+				
+				
+				if(zoom >3 && zoom <= 4){
+					isle.visible = true;
+				}else{
+					ocean.visible = false;
+					sea.visible = false;
+				}  */
+				
+			}
+			
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+	</fx:Declarations>
+	
+	<degrafa:fills>
+		<degrafa:SolidFill color="0xff0000" id="fill_desc"/>
+		<degrafa:SolidFill color="0x000000" id="fill_desc2" alpha=".3"/>
+	</degrafa:fills>
+	
+
+	<!--<degrafa:RegularRectangle width="1015.539" height="500.964" x="0" y="0" fill="{fill_desc2}"/>
+
+	-->
+	<module:mapItem id="ocean" visible="false">
+		<degrafa:RasterText transformContext="{new Matrix(1,0,0,1,33.8823, 206.4302)}" fill="{fill_desc}" fontSize="12" text="北太平洋"/>
+		
+		<degrafa:RasterText transformContext="{new Matrix(1,0,0,1, 48.2168, 26.2642)}" fill="{fill_desc}" fontSize="12" text="北冰洋"/>
+		
+		<degrafa:RasterText transformContext="{new Matrix(1,0,0,1,  921.2178, 215.0981)}" fill="{fill_desc}" fontSize="12" text="北太平洋"/>
+		
+		<degrafa:RasterText transformContext="{new Matrix(1,0,0,1,  849.2109, 28.3442)}" fill="{fill_desc}" fontSize="12" text="北冰洋"/>
+		
+		<degrafa:RasterText transformContext="{new Matrix(1,0,0,1,  414.3374, 401.8218)}" fill="{fill_desc}" fontSize="12" text="南大西洋"/>
+		
+		<degrafa:RasterText transformContext="{new Matrix(1,0,0,1,  333.2148, 226.2593)}" fill="{fill_desc}" fontSize="12" text="北大西洋"/>
+		
+		<degrafa:RasterText transformContext="{new Matrix(1,0,0,1,  136.8452, 365.7534)}" fill="{fill_desc}" fontSize="12" text="南太平洋"/>
+		
+		<degrafa:RasterText transformContext="{new Matrix(1,0,0,1,  673.5508, 386.9312)}" fill="{fill_desc}" fontSize="12" text="印度洋"/>
+	</module:mapItem>
+	
+	<module:mapItem id="sea" visible="false">
+		<degrafa:RasterText transformContext="{new Matrix(1,0,0,1,  72.0044, 69.8022)}" fill="{fill_desc}" fontSize="12" text="波弗特海"/>
+		
+		<degrafa:RasterText transformContext="{new Matrix(1,0,0,1,  843.334, 207.0776)}" fill="{fill_desc}" fontSize="12" text="日本海"/>
+		
+		<degrafa:RasterText transformContext="{new Matrix(1,0,0,1,  877.7168, 157.2642)}" fill="{fill_desc}" fontSize="12" text="鄂霍次克海"/>
+		
+		<degrafa:RasterText transformContext="{new Matrix(1,0,0,1,  969.3848, 142.9307)}" fill="{fill_desc}" fontSize="12" text="白令海"/>
+		
+		<degrafa:RasterText transformContext="{new Matrix(1,0,0,1,  981.752, 88.0459)}" fill="{fill_desc}" fontSize="12" text="楚科奇海"/>
+		
+		<degrafa:RasterText transformContext="{new Matrix(1,0,0,1,  912.1113, 64.7661)}" fill="{fill_desc}" fontSize="12" text="东西伯利亚海"/>
+		
+		<degrafa:RasterText transformContext="{new Matrix(1,0,0,1,  795.3984, 46.3628)}" fill="{fill_desc}" fontSize="12" text="拉普帖夫海"/>
+		
+		<degrafa:RasterText transformContext="{new Matrix(1,0,0,1,  689.4668, 39.3892)}" fill="{fill_desc}" fontSize="12" text="喀拉海"/>
+		
+		<degrafa:RasterText transformContext="{new Matrix(1,0,0,1,  573.6621, 62.9058)}" fill="{fill_desc}" fontSize="12" text="巴伦支海"/>
+		
+		<degrafa:RasterText transformContext="{new Matrix(1,0,0,1,  453.9185, 42.5249)}" fill="{fill_desc}" fontSize="12" text="格陵兰海"/>
+		
+		<degrafa:RasterText transformContext="{new Matrix(1,0,0,1,  479.4668, 91.6392)}" fill="{fill_desc}" fontSize="12" text="挪威海"/>
+		
+		<degrafa:RasterText transformContext="{new Matrix(1,0,0,1,  480.5918, 147.7642)}" fill="{fill_desc}" fontSize="12" text="北海"/>
+		
+		<degrafa:RasterText transformContext="{new Matrix(1,0,0,1,  611.2168, 199.0142)}" fill="{fill_desc}" fontSize="12" text="里海"/>
+		
+		<degrafa:RasterText transformContext="{new Matrix(1,0,0,1,  564.3789, 194.6831)}" fill="{fill_desc}" fontSize="12" text="黑海"/>
+		
+		<degrafa:RasterText transformContext="{new Matrix(1,0,0,1,  514.1445, 221.8979)}" fill="{fill_desc}" fontSize="12" text="地中海"/>
+		
+		<degrafa:RasterText transformContext="{new Matrix(1,0,0,1,  579.6338, 273.3892)}" fill="{fill_desc}" fontSize="12" text="红海"/>
+		
+		<degrafa:RasterText transformContext="{new Matrix(1,0,0,1,  642.1504, 280.7954)}" fill="{fill_desc}" fontSize="12" text="阿拉伯海"/>
+		
+		<degrafa:RasterText transformContext="{new Matrix(1,0,0,1,  782.4961, 298.6821)}" fill="{fill_desc}" fontSize="12" text="南海"/>
+		
+		<degrafa:RasterText transformContext="{new Matrix(1,0,0,1,  830.4395, 275.2642)}" fill="{fill_desc}" fontSize="12" text="菲律宾海"/>
+		
+		<degrafa:RasterText transformContext="{new Matrix(1,0,0,1,  906.957, 375.73)}" fill="{fill_desc}" fontSize="12" text="珊瑚海"/>
+		
+		<degrafa:RasterText transformContext="{new Matrix(1,0,0,1,  918.9668, 390.7642)}" fill="{fill_desc}" fontSize="12" text="新喀里多尼亚"/>
+		
+		<degrafa:RasterText transformContext="{new Matrix(1,0,0,1,  911.8418, 448.1392)}" fill="{fill_desc}" fontSize="12" text="塔斯曼海"/>
+		
+		<degrafa:RasterText transformContext="{new Matrix(1,0,0,1,  890.332, 457.7456)}" fill="{fill_desc}" fontSize="12" text="塔斯马尼亚岛"/>
+		
+		<degrafa:RasterText transformContext="{new Matrix(1,0,0,1,  205.1592, 254.4116)}" fill="{fill_desc}" fontSize="12" text="墨西哥湾"/>
+		
+		<degrafa:RasterText transformContext="{new Matrix(1,0,0,1,  252.4385, 283.6587)}" fill="{fill_desc}" fontSize="12" text="加勒比海"/>
+		
+		<degrafa:RasterText transformContext="{new Matrix(1,0,0,1,  273.3418, 66.5142)}" fill="{fill_desc}" fontSize="12" text="巴芬湾"/>
+		
+		<degrafa:RasterText transformContext="{new Matrix(1,0,0,1,  301.4668, 109.5142)}" fill="{fill_desc}" fontSize="12" text="大卫斯"/>
+		
+		<degrafa:RasterText transformContext="{new Matrix(1,0,0,1,  301.4668, 119.1143)}" fill="{fill_desc}" fontSize="12" text="海峡"/>
+		
+		<degrafa:RasterText transformContext="{new Matrix(1,0,0,1,  311.8452, 145.7808)}" fill="{fill_desc}" fontSize="12" text="拉布拉多海"/>
+		
+		<degrafa:RasterText transformContext="{new Matrix(1,0,0,1,  220.2075, 133.5015)}" fill="{fill_desc}" fontSize="12" text="哈得孙河"/>
+		
+		<degrafa:RasterText transformContext="{new Matrix(1,0,0,1,  372.5918, 111.8892)}" fill="{fill_desc}" fontSize="12" text="丹麦海峡"/>
+	</module:mapItem>
+	
+	<module:mapItem id="isle" visible="false">
+		<degrafa:RasterText transformContext="{new Matrix(1,0,0,1,  870.7178, 169.9307)}" fill="{fill_desc}" fontSize="12" text="萨哈林岛"/>
+		
+		<degrafa:RasterText transformContext="{new Matrix(1,0,0,1,  965.1211, 74.8804)}" fill="{fill_desc}" fontSize="12" text="符兰格尔岛"/>
+		
+		<degrafa:RasterText transformContext="{new Matrix(1,0,0,1,  849.4668, 48.1392)}" fill="{fill_desc}" fontSize="12" text="新西伯利亚群岛"/>
+		
+		<degrafa:RasterText transformContext="{new Matrix(1,0,0,1,  750.043, 25.5151)}" fill="{fill_desc}" fontSize="12" text="北地群岛"/>
+		
+		<degrafa:RasterText transformContext="{new Matrix(1,0,0,1,  642.7168, 63.0142)}" fill="{fill_desc}" fontSize="12" text="新地岛"/>
+		
+		<degrafa:RasterText transformContext="{new Matrix(1,0,0,1,  614.3418, 31.5142)}" fill="{fill_desc}" fontSize="12" text="法兰士约瑟夫地群岛"/>
+		
+		<degrafa:RasterText transformContext="{new Matrix(1,0,0,1,  498.2168, 21.3892)}" fill="{fill_desc}" fontSize="12" text="斯瓦尔巴特群岛"/>
+		
+		<degrafa:RasterText transformContext="{new Matrix(1,0,0,1,  620.8418, 290.8892)}" fill="{fill_desc}" fontSize="12" text="索科特拉岛"/>
+		
+		<degrafa:RasterText transformContext="{new Matrix(1,0,0,1,  914.3418, 344.7642)}" fill="{fill_desc}" fontSize="12" text="所罗门群岛"/>
+		
+		<degrafa:RasterText transformContext="{new Matrix(1,0,0,1,  185.5684, 332.4546)}" fill="{fill_desc}" fontSize="12" text=" 加拉帕哥斯群岛"/>
+		
+		<degrafa:RasterText transformContext="{new Matrix(1,0,0,1,  318.3677, 168.5142)}" fill="{fill_desc}" fontSize="12" text="纽芬兰岛"/>
+		
+		<degrafa:RasterText transformContext="{new Matrix(1,0,0,1,  306.4175, 294.937)}" fill="{fill_desc}" fontSize="12" text="特立尼达和多巴哥"/>
+		
+		<degrafa:RasterText transformContext="{new Matrix(1,0,0,1,  825.834, 353.7651)}" fill="{fill_desc}" fontSize="12" text="东帝汶"/>
+		
+		<degrafa:RasterText transformContext="{new Matrix(1,0,0,1,  366.9004, 485.9839)}" fill="{fill_desc}" fontSize="12" text="南乔治亚岛和"/>
+		
+		<degrafa:RasterText transformContext="{new Matrix(1,0,0,1,  366.9004, 493.1841)}" fill="{fill_desc}" fontSize="12" text="南桑威齐群岛"/>
+		
+		<degrafa:RasterText transformContext="{new Matrix(1,0,0,1,  300.3853, 480.7231)}" fill="{fill_desc}" fontSize="12" text="福克兰群岛"/>
+		
+		<degrafa:RasterText transformContext="{new Matrix(1,0,0,1,  10.5771, 276.3872)}" fill="{fill_desc}" fontSize="12" text="夏威夷群岛"/>
+		
+		<degrafa:RasterText transformContext="{new Matrix(1,0,0,1,  257.0503, 257.0981)}" fill="{fill_desc}" fontSize="12" text="巴哈马群岛"/>
+		
+		<degrafa:RasterText transformContext="{new Matrix(1,0,0,1,  965.4717, 373.7368)}" fill="{fill_desc}" fontSize="12" text="斐济"/>
+	</module:mapItem>
+
+	
+</degrafa:GeometryGroup>	

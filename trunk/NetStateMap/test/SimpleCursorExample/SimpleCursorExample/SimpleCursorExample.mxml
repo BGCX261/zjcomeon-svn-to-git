@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" 
+	>
+
+	<mx:Script>
+		<![CDATA[
+			import com.harrisfamily.cursors.Circle;
+			import com.harrisfamily.cursors.Ellipse;
+			import com.harrisfamily.cursors.Rect;
+			import com.harrisfamily.cursors.RoundRectComplex;
+			
+			import mx.managers.CursorManager;
+			
+			private function setCursor( cursorClass:Class = null ):void
+			{
+				
+				CursorManager.setCursor( cursorClass );
+				
+			}
+			
+			private function clearCursor():void
+			{
+				
+				CursorManager.removeAllCursors();
+				
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:Tile
+		horizontalGap="25"
+		verticalGap="25"
+		>
+		
+	
+		<mx:Panel 
+			title="Circle Cursor" 		
+			mouseOver="setCursor( Circle );"
+			mouseOut="clearCursor();"
+			height="250"
+			width="250"
+			
+		/>
+		<mx:Panel 
+			title="Ellipse Mouse" 		
+			mouseOver="setCursor( Ellipse );"
+			mouseOut="clearCursor();"
+			height="250"
+			width="250"
+			
+		/>
+		<mx:Panel 
+			title="Rect Mouse" 		
+			mouseOver="setCursor( Rect );"
+			mouseOut="clearCursor();"
+			height="250"
+			width="250"
+			
+		/>
+		<mx:Panel 
+			title="RoundRectComplex Mouse" 		
+			mouseOver="setCursor( RoundRectComplex );"
+			mouseOut="clearCursor();"
+			height="250"
+			width="250"
+			
+		/>
+		
+		
+	</mx:Tile>
+	
+</mx:Application>

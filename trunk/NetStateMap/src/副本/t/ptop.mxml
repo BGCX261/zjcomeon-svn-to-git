@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600"
+			   
+			   xmlns:degrafa="http://www.degrafa.com/2007" 
+			   xmlns:paint="com.degrafa.paint.*"
+			   xmlns:geometry="com.degrafa.geometry.*" 
+			   
+			   creationComplete="init()" 
+			  >
+	<s:layout>
+		<s:BasicLayout/>
+	</s:layout>
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+	</fx:Declarations>
+	
+	
+	<fx:Script>
+		<![CDATA[
+			import com.degrafa.paint.palette.Palette;
+			
+			import mx.collections.ArrayCollection;
+			
+			import zjMap.MapLine.NetStateLine;
+			import zjMap.MapMark.MapMark;
+			
+			private var currentSelectMark:MapMark;
+			private var sitesMarkPosArr:Array = new Array();
+			
+			private function init():void{
+			
+				
+				initMark();
+				
+				mark_group.addEventListener(MouseEvent.CLICK,selectMark)
+				
+			}
+			
+			private function initMark():void{
+				
+				for(var i:int=0;i<10;i++){
+					
+					var site_id:String  = "id_"+i;
+					var site_en:String = "en_"+i;
+					var site_cn:String = "cn_"+i;
+					var site_pos:String = String(Math.random()*300)+","+String(Math.random()*200);
+					var site_state:String = "ok";
+					
+					var pos:Point = new Point(Number(site_pos.split(",")[0]),Number(site_pos.split(",")[1]));
+					
+					addSiteMark(pos,site_id,site_en,site_cn);
+				}
+				
+			}
+			private function addSiteMark(markPoint:Point,id:String,en:String,cn:String):void{
+				
+				var s:MapMark = new MapMark(new Object());
+				mark_group.addChild(s);
+				s.x = markPoint.x;
+				s.y = markPoint.y;
+			
+			
+					
+				sitesMarkPosArr.push(s);
+			}
+			
+			
+			private function selectMark(evt:MouseEvent):void{
+				var mark:MapMark;
+				trace(evt.target,evt.currentTarget)
+				if(evt.target is MapMark || evt.target.parent is MapMark){
+					mark = evt.target as MapMark;
+	
+					if(currentSelectMark != null){
+						currentSelectMark.setUnSelected();
+						currentSelectMark.removeEventListener(MouseEvent.MOUSE_DOWN,drapCopy);
+						currentSelectMark.removeEventListener(MouseEvent.MOUSE_MOVE,moveCopy);
+						
+						currentSelectMark = mark;
+						currentSelectMark.setSelected();
+					}else{
+						currentSelectMark = mark;
+						currentSelectMark.setSelected();
+					}
+					
+					currentSelectMark.addEventListener(MouseEvent.MOUSE_DOWN,drapCopy);
+					currentSelectMark.addEventListener(MouseEvent.MOUSE_MOVE,moveCopy);
+				}
+			}
+			
+			private function drapCopy(evt:MouseEvent):void{
+				
+				var copy:MapMark = new MapMark(new Object());
+				copy.alpha = 0.5;
+				copy.setColor(0xff0000,1);
+				copy.x = (evt.target as MapMark).x;
+				copy.y = (evt.target as MapMark).y;
+				mark_group.addChild(copy);
+				
+				copy.copySource = (evt.target as MapMark)
+				
+				copy.startDrag();
+				
+				copy.addEventListener(MouseEvent.MOUSE_UP,removeCopy);
+			}
+			private function moveCopy(evt:MouseEvent):void{
+				
+				//copy.setColor(0xff0000);
+				
+				
+			}
+			private function removeCopy(evt:MouseEvent):void{
+				
+				
+				(evt.target as MapMark).stopDrag();
+				(evt.target as MapMark).removeEventListener(MouseEvent.MOUSE_UP,removeCopy);
+				
+				
+				var m:MapMark = evt.target as MapMark;
+				
+				hitTestMark(m);
+				
+				//sortMarkDepth((evt.target as MapMark));//设置深度
+			}
+			
+			private function hitTestMark(m:MapMark):void{
+				var mp:Point = m.getPosition();
+				
+				for(var i:int=0;i<sitesMarkPosArr.length;i++){
+					
+					var curmark:MapMark = (sitesMarkPosArr[i] as MapMark);
+					
+					//数组中不包含复制对象，并且复制对象碰撞数组中对象成功后
+					if(curmark != m && m.hitTestObject(curmark)){
+						trace(curmark.siteId)
+						
+						//删除复制项
+						mark_group.removeChild(m);
+						
+						//取复制对象的源，及源的坐标
+						var fp:Point = m.copySource.getPosition();
+						//取被碰撞对象的坐标
+						var tp:Point = curmark.getPosition();
+						//画线
+						var line:NetStateLine = new NetStateLine(fp, tp,"1",true);
+						ping_group.addChild(line);
+						
+						trace(fp,tp)
+						
+						
+						
+					}
+				}
+
+			}
+			
+			
+			private function sortMarkDepth(obj:DisplayObject):void{
+				mark_group.setChildIndex(obj,mark_group.numChildren-1);
+			}
+			
+			/**
+			 * 
+			 * 设置画线区域遮罩效果
+			 * */
+			private function setDrawLineMaskEffect():void{
+				
+			}
+		]]>
+	</fx:Script>
+	<s:controlBarContent>
+		<s:CheckBox id="markMoveEnable" label="设置站点拖动" selected="false"  />
+	</s:controlBarContent>
+	
+	<degrafa:Surface id="map_surface">
+		<degrafa:GeometryGroup id="ping_group" x="0" y="0" scaleX="1" scaleY="1" >
+		</degrafa:GeometryGroup>
+		
+		<degrafa:GeometryGroup id="mark_group" x="0" y="0" scaleX="1" scaleY="1" >
+		</degrafa:GeometryGroup>
+		
+	</degrafa:Surface>
+	
+</s:Application>

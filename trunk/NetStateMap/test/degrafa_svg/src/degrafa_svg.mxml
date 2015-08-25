@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" creationComplete="init()">
+	<mx:Script>
+		<![CDATA[
+			import SVGRender.SVGToGeometry;
+			import mx.controls.Alert;
+			import com.degrafa.Surface;
+			
+			
+			public function init():void{
+				
+			var request:URLRequest=new URLRequest("svg_files/prueba.svg");			
+			var loaderSVG:URLLoader=new URLLoader(request);			
+			loaderSVG.addEventListener(Event.COMPLETE, procesarSVG);	
+			loaderSVG.addEventListener(IOErrorEvent.IO_ERROR, errorOnChargeFile);			
+							
+		}
+			
+		private function procesarSVG(e:Event):void{			
+			var xmlSVG: XML = new XML(e.target.data);	
+			var dibujador:SVGToGeometry=new SVGToGeometry();
+			var surface:Surface= dibujador.cargar(xmlSVG);
+			Application.application.addChild(surface);
+				
+		}
+		
+		public function errorOnChargeFile(e:IOErrorEvent):void{
+				Alert.show("error al cargar el archivo");
+				trace(e.text);
+			}		
+			
+		]]>
+	</mx:Script>
+	<mx:Canvas x="10" y="10" width="200" height="200" id="canvas">
+	</mx:Canvas>
+</mx:Application>

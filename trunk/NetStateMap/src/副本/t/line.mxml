@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600"
+			   
+			   creationComplete="init()" 
+			   >
+	<s:layout>
+		<s:BasicLayout/>
+	</s:layout>
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			
+			private var anchor1:Point = new Point(100,100);
+			private var anchor2:Point = new Point(500,400);
+			private var control1:Point = new Point(300,200);
+			private var control2:Point = new Point(420,300);
+			private function init():void{
+				
+				var line:Shape = new Shape();
+				line.graphics.lineStyle(2,0x000000);
+				line.graphics.moveTo(anchor1.x,anchor1.y);
+				
+				// store values where to lineTo
+				var posx:Number;
+				var posy:Number;
+				
+				//loop through 100 steps of the curve
+				for (var u:Number = 0; u <= 1; u += 1/100) {
+					
+					posx = Math.pow(u,3)*(anchor2.x+3*(control1.x-control2.x)-anchor1.x)
+						+3*Math.pow(u,2)*(anchor1.x-2*control1.x+control2.x)
+						+3*u*(control1.x-anchor1.x)+anchor1.x;
+					
+					posy = Math.pow(u,3)*(anchor2.y+3*(control1.y-control2.y)-anchor1.y)
+						+3*Math.pow(u,2)*(anchor1.y-2*control1.y+control2.y)
+						+3*u*(control1.y-anchor1.y)+anchor1.y;
+					
+					line.graphics.lineTo(posx,posy);
+					
+				}
+				
+				//Let the curve end on the second anchorPoint
+				
+				line.graphics.lineTo(anchor2.x,anchor2.y);
+				
+				cv.addChild(line);
+				
+			}
+			
+		]]>
+	</fx:Script>
+	
+	
+	<mx:UIComponent id="cv" width="100%" height="100%" >
+		
+	</mx:UIComponent>
+	
+	
+</s:Application>

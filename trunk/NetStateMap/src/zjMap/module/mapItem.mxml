@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<degrafa:GeometryGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" 
+		 
+		 xmlns:degrafa="http://www.degrafa.com/2007" 
+		 xmlns:paint="com.degrafa.paint.*"
+		 xmlns:geometry="com.degrafa.geometry.*" 
+	
+		>
+		 
+	
+	<fx:Script>
+		<![CDATA[
+			import spark.filters.GlowFilter;
+			
+			
+			/**
+			 * 选中状态
+			 * */
+			private var _isSelected:Boolean;
+			public function get isSelected():Boolean{
+				return _isSelected;
+			} 
+			public function set isSelected(value:Boolean):void{
+				_isSelected=value;
+			}
+			
+			/**
+			*
+			* 高亮显示
+			*/
+			private function onMouseOver(event:MouseEvent):void{
+				if(!_isSelected){
+					//super.geometry[0].fill=fillcolor1;
+					
+					super.geometry[0].stroke = selectstrokecolor;
+				}			
+				
+			}
+			private function onMouseOut(event:MouseEvent):void{
+				if(!isSelected){
+					//super.geometry[0].fill=fillcolor;
+					
+					super.geometry[0].stroke = strokecolor;
+
+				}				
+				
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			
+			
+			/***
+			 * tip
+			 * */
+			[Bindable]
+			private var _tooltip:String;
+			public function get tooltip():String{
+				return _tooltip;
+			}
+			public function set tooltip(name:String):void{
+				_tooltip = name;
+			}
+
+			
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Script>
+		<![CDATA[
+			
+			[Bindable]
+			private var _strokeSet:SolidStroke;
+			public function get strokeSet():SolidStroke{
+				return _strokeSet;
+			}
+			public function set strokeSet(value:SolidStroke):void{
+					_strokeSet = value;
+			}			
+			
+			[Bindable]
+			private var _colorSet:SolidFill;
+			public function get colorSet():SolidFill{
+				return _colorSet;
+			}
+			public function set colorSet(value:SolidFill):void{
+				_colorSet = value;	
+				
+				if(value){
+					initColor();
+				}
+			}
+			
+			
+			[Bindable]
+			public var itemFillColor:uint;
+			[Bindable]
+			public var itemStrokeColor:uint;
+			
+			private function initColor():void{
+				if(_colorSet){
+					itemFillColor = uint(_colorSet.color);
+				}
+				
+				if(_strokeSet){
+					itemStrokeColor = uint(_strokeSet.color);
+				}else{
+					itemStrokeColor = 0x1B1464;
+				}
+				
+				
+				super.geometry[0].fill = fillcolor;
+				
+				super.geometry[0].stroke = strokecolor;
+			}
+			
+			
+			
+		]]>
+	</fx:Script>
+
+	
+	
+	<degrafa:fills>
+		<degrafa:SolidFill color="{itemFillColor}" id="fillcolor" alpha="1"/>
+		<degrafa:SolidFill color="0xFFFFFF" alpha=".8" id="fillcolor1"/>
+	</degrafa:fills>
+	<degrafa:strokes>
+		<degrafa:SolidStroke color="{itemStrokeColor}" weight="0.25" alpha=".5" id="strokecolor"/>
+		<degrafa:SolidStroke color="yellow" weight="0.25" alpha="0.25" id="selectstrokecolor"/>
+	</degrafa:strokes>
+	
+	
+</degrafa:GeometryGroup>

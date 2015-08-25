@@ -1,0 +1,627 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   
+			    width="100%" height="100%"
+			   
+			   xmlns:degrafa="http://www.degrafa.com/2007" 
+			   xmlns:paint="com.degrafa.paint.*"
+			   xmlns:geometry="com.degrafa.geometry.*" 
+			   
+			   xmlns:local="*"
+			   
+			   creationComplete="initMap()" xmlns:module="zjMap.module.*"
+			   >
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+	</fx:Declarations>
+	
+	<fx:Style source="css/Style.css"/>
+	
+	
+	<fx:Script>
+		<![CDATA[
+			import zjMap.MapLine.NetStateLine;
+			
+			
+			/***
+			 * 
+			 * 外部接口
+			 * */
+			private function ConnectionFun():void{
+				if(ExternalInterface.available){
+					if(ExternalInterface.call("jsReady")){
+						
+						//ExternalInterface.addCallback("setPingData",setPingData);
+						
+						var pingDataObj:Object = ExternalInterface.call("setPingData");
+						setPingData(pingDataObj);
+						
+					}else{
+						//Alert.show("Connection Failed");
+						
+						
+						var data:Object={
+							self:{id:"cn",en:"china",cn:'中国'},
+							ping:[
+								{id:"in",en:"India",cn:"印度",state:0},
+								{id:"kp",en:"R.O.Korea",cn:"韩国",state:1},
+								{id:"jp",en:"Japan",cn:"日本",state:1}
+							]
+						}
+						
+						setPingData(data);
+					}
+				}
+			}
+			
+			/**
+			 * 
+			 * 设置站点快捷按钮，点击后显示网络线
+			 * 
+			 * @param obj:站点数据 (json格式)
+			 * */
+			private function setPingData(obj:Object):void{
+				//总站
+				var self:SiteShortCut = new SiteShortCut(obj.self);
+
+				SiteShortCut_group.addChild(self);
+				self.y = 0;
+				
+
+				//ping对象
+				var ping:Object = obj.ping;
+				for(var i:int=0;i<ping.length;i++){
+					
+					var site:SiteShortCut = new SiteShortCut(ping[i]);
+					
+					site.x = (i+1)*105;
+					
+					SiteShortCut_group.addChild(site);
+					
+					site.addEventListener(MouseEvent.CLICK,pingSite);
+				}
+			}
+			
+			private function pingSite(evt:MouseEvent):void{
+				
+				var ssc:SiteShortCut = evt.target as SiteShortCut;
+				
+					
+				for(var i:int=0;i<sitesMarkPosArrCol.length;i++){
+					
+					if(sitesMarkPosArrCol[i].id == ssc.sscId){
+						
+						/**画ping线*/	
+						//pingSiteLine(selfMarkObj, sitesMarkPosArrCol[i], ssc.sscState);	
+					}
+					
+				}
+			}
+			
+			/**
+			 * 
+			 * 画网络线
+			 * 
+			 * @param from：起始对象
+			 * 
+			 * @param to：目标对象
+			 * @param state：网络状态
+			 * */
+			private function pingSiteLine(from:Object, to:Object, state:String):void{
+				var fx:String = from.pos.split(",")[0];
+				var fy:String = from.pos.split(",")[1];
+				
+				var fp:Point = new Point(Number(fx),Number(fy));
+				
+				var tx:String = to.pos.split(",")[0];
+				var ty:String = to.pos.split(",")[1];
+				var tp:Point = new Point(Number(tx),Number(ty));
+				
+				//localToContent(
+				
+				
+				var lineId:String = (fp.x+"-"+fp.y) + "&" + (tp.x+"-"+tp.y);
+				//先删除
+				delNetStateLine(ping_group,lineId)
+
+				//再创建
+				var line:NetStateLine = new NetStateLine(fp, tp,state,true);
+				ping_group.addChild(line);
+				netStateLineArrCol.addItem(line);
+
+				
+				
+				
+			}
+			/**
+			 * 
+			 * 延时删除网络线
+			 * @param line:当前网络线
+			 * @param tpoint:目标对象坐标
+			 * @param fpoint:起始对象坐标
+			 * */
+			private function myDelayedCall(line:Sprite, tpoint:Point, fpoint:Point):void{
+				
+				ping_group.removeChild(line);
+				
+			}
+			
+		]]>
+	</fx:Script>
+	
+	
+	<fx:Script>
+		<![CDATA[
+			import zjMap.MapTool.MapTool;
+			import zjMap.MapLine.NetStateLine;
+			import zjMap.MapMark.MapMark;
+			import com.adobe.serialization.json.JSON;
+			import com.greensock.TweenLite;
+			import com.greensock.TweenMax;
+			import com.greensock.layout.AutoFitArea;
+			import com.greensock.layout.ScaleMode;
+			import com.greensock.plugins.TweenPlugin;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.controls.Image;
+			import mx.controls.ToolTip;
+			import mx.managers.ToolTipManager;
+			
+			private var isMouseDown:Boolean = false;
+			private var drapT:Number,drapR:Number,drapB:Number,drapL:Number
+			
+			
+			private var pos:Array = new Array();
+			private var distance:Number = 20;
+			
+			private var markDrapPoint:Point = new Point(0,0);
+			
+			/**自己*/
+			private var selfMarkObj:Object = new Object();
+			/**所有站点*/
+			private var sitesMarkPosArrCol:ArrayCollection = new ArrayCollection();
+			/**所有网络状态线*/
+			private var netStateLineArrCol:ArrayCollection = new ArrayCollection();
+			
+			
+			private var mapToolTip:ToolTip;
+			private function initToolTip():void{
+				
+				mapToolTip=ToolTip(ToolTipManager.createToolTip("", 0, 0, null));
+				mapToolTip.visible=false;
+				
+			}
+			
+			private function initMap():void{
+				
+				initToolTip();
+				//init_markDoubClick();
+				//installMap();
+				
+				/**拖动应用*/
+				initMapDrap();
+				
+				/**初始化导航*/
+				init_MapNav();
+				
+				/**初始化站点*/
+				init_Mark();
+				
+				/**外部接口*/
+				ConnectionFun();
+				
+
+					
+				TweenPlugin.activate([TransformAroundPointPlugin]);
+				//TweenLite.to(map_surface, 1, {transformAroundPoint:{point:new Point(0, 0), scaleX:1, scaleY:1, rotation:0}}); 
+				
+				
+				map_surface.addEventListener(MouseEvent.MOUSE_WHEEL,setScalZoom);
+				map_surface.addEventListener(MouseEvent.MOUSE_MOVE,onMapMouseMove);
+			}
+			
+			private function setScalZoom(evt:MouseEvent):void{
+				var omx:Number = map_surface.mouseX;
+				var omy:Number = map_surface.mouseY;
+				
+				trace(map_surface.x,map_surface.y,"---",omx,omy);
+				
+				map_surface.scaleX += evt.delta/100;
+				map_surface.scaleY += evt.delta/100;
+				map_surface.x -= omx*evt.delta/100;
+				map_surface.y -= omy*evt.delta/100; 
+			}
+
+			private function setMapTip():void{
+				
+			}			
+			
+			/**
+			 * 拖动应用
+			 * 
+			 * */
+			private function initMapDrap():void{
+				
+				
+				
+				//定位至亚洲，中国
+				//TweenLite.to(map_surface, 3, {top:-300,left:-1500});
+				
+				container.addEventListener(MouseEvent.MOUSE_DOWN,mapStartDrap);
+			}
+			private function mapStartDrap(evt:MouseEvent):void{
+				trace("(down)map:",evt.target,evt.target.mouseX)
+				
+				container.addEventListener(MouseEvent.MOUSE_UP,mapStopDrag);
+				
+				//var dragRect:Rectangle=new Rectangle(0,0,3000,1500);
+				//var dragRect:Rectangle=new Rectangle(drapL,drapT,drapR-drapL,drapB-drapL);
+				if(mapMoveEnable.selected){
+					map_surface.startDrag(false);
+				}
+				
+			}
+			private function mapStopDrag(evt:MouseEvent):void{
+				trace("(up)map");
+				
+				map_surface.stopDrag();
+				
+				//trace(my.x,my.y);
+				container.removeEventListener(MouseEvent.MOUSE_UP,mapStopDrag);
+			}
+			
+			/**
+			 * 
+			 * 计算移动位置 防止超出
+			 * */
+			private function getDragArea():void {
+				var _r:Number = container.x+map_surface.width/2;
+				var _b:Number = container.y+map_surface.height/2;
+				var _l:Number = _r-(map_surface.width-container.width);
+				var _t:Number = _b-(map_surface.height-container.height);
+				//trace(_r,_b,_l,_t)
+				drapR = _r;//right
+				drapB = _b;//bottom
+				drapL = _l;//left
+				drapT = _t;//top
+				
+				
+			}
+			
+			/**
+			 * 初始化站点
+			 * 
+			 * */
+			[Bindable] private var sites:XMLList;  
+			private function init_Mark():void{
+				
+				var request:URLRequest = new URLRequest("data/sites.xml");  
+				var loader:URLLoader = new URLLoader(request);  
+				loader.addEventListener(Event.COMPLETE, loaderCompleteHandler);  
+				
+			}
+			private function loaderCompleteHandler(evt:Event):void{
+				var xml:XML = XML(evt.target.data)
+				
+				sites = xml.site as XMLList;
+				
+				for(var i:int=0;i<sites.length();i++){
+					
+					var site_id:String  = sites[i].@id;
+					var site_en:String = sites[i].@en;
+					var site_cn:String = sites[i].@cn;
+					var site_pos:String = sites[i].@pos;
+					var site_state:String = sites[i].@state;
+					
+					var pos:Point = new Point(Number(site_pos.split(",")[0]),Number(site_pos.split(",")[1]));
+					
+					addSiteMark(pos,site_id,site_en,site_cn);
+					
+					if(site_id == "cn"){
+						selfMarkObj.id = site_id;
+						selfMarkObj.name = site_cn;
+						selfMarkObj.pos = site_pos;
+						selfMarkObj.state = site_state;
+					}
+					var obj:Object = new Object();
+					obj.id = site_id;
+					obj.name = site_cn;
+					obj.pos = site_pos;
+					obj.state = site_state;
+					sitesMarkPosArrCol.addItem(obj);
+				}
+			}
+			
+			
+			
+			
+			/**
+			 * 初始化导航
+			 * */
+			private function init_MapNav():void{
+				var nav:MapTool = new MapTool(1,1,true,true,true);
+				nav.x = nav.y = 10;
+				container.addElement(nav);
+				
+				/* nav.topImgBtn.addEventListener(MouseEvent.MOUSE_DOWN,mapMoveTop);
+				nav.rightImgBtn.addEventListener(MouseEvent.CLICK,mapMoveRight);
+				nav.bottomImgBtn.addEventListener(MouseEvent.CLICK,mapMoveBottom);
+				nav.leftImgBtn.addEventListener(MouseEvent.CLICK,mapMoveLeft); */
+
+			}
+			private function mapMoveTop(evt:MouseEvent):void{
+				var leftpos:Number = map_surface.x;
+				var toppos:Number = map_surface.y;
+				
+				TweenLite.to(map_surface, 1, {top:toppos-100});
+			}
+			private function mapMoveRight(evt:MouseEvent):void{
+				var leftpos:Number = map_surface.x;
+				var toppos:Number = map_surface.y;
+				
+				TweenLite.to(map_surface, 1, {left:leftpos-100});
+			}
+			private function mapMoveBottom(evt:MouseEvent):void{
+				var leftpos:Number = map_surface.x;
+				var toppos:Number = map_surface.y;
+				
+				TweenLite.to(map_surface, 1, {top:toppos+100});
+			}
+			private function mapMoveLeft(evt:MouseEvent):void{
+				var leftpos:Number = map_surface.x;
+				var toppos:Number = map_surface.y;
+				
+				TweenLite.to(map_surface, 1, {left:leftpos+100});
+			}
+			
+
+			
+			/*****
+			 * 
+			 * 
+			 * *************/
+			private function init_markDoubClick():void{
+				this.doubleClickEnabled = true;
+				
+				this.addEventListener(MouseEvent.DOUBLE_CLICK,setMarkPoint);
+			}
+			private function setMarkPoint(evt:MouseEvent):void{
+				trace("(dc)mark point:",this.mouseX,this.mouseY, map_group.mouseX);
+				
+				//markPos.text = (Number(this.mouseX))+","+this.mouseY;
+				markPos.text = (Number(map_group.mouseX))+","+map_group.mouseY;
+
+			}
+		
+			private function addMark_input():void{
+				var vals:String = markPos.text;
+				var markpoint:Point = new Point(0,0);
+				markpoint.x = Number(vals.split(",")[0]);
+				markpoint.y = Number(vals.split(",")[1]);
+				
+				addSiteMark(markpoint,"","MARK","标记");
+	
+			}
+			
+			private function addSiteMark(markPoint:Point,id:String,cn:String,en:String):void{
+				
+				
+				//var s:MapMark = new MapMark(id,en,cn);
+				//s.x = markPoint.x;
+				//s.y = markPoint.y;
+				
+				
+				//mark_group.addChild(s);
+
+			}
+
+			/*****
+			 * 
+			 * 
+			 * *************/
+			
+			private function toLine():void{
+				var fx:String = pos_from.text.split(",")[0];
+				var fy:String = pos_from.text.split(",")[1];
+				
+				var fp:Point = new Point(Number(fx),Number(fy));
+				
+				var tx:String = pos_to.text.split(",")[0];
+				var ty:String = pos_to.text.split(",")[1];
+				var tp:Point = new Point(Number(tx),Number(ty));
+				
+			
+				
+				var lineId:String = (fp.x+"-"+fp.y) + "&" + (tp.x+"-"+tp.y);
+				//先删除
+				delNetStateLine(ping_group,lineId)
+
+					
+				var line:NetStateLine = new NetStateLine(fp, tp,"1",true);
+				ping_group.addChild(line);
+				netStateLineArrCol.addItem(line);
+					
+			}
+			
+			/**
+			 * 
+			 * 删除网络状态线
+			 * @param parent:父级容器
+			 * @param lineId:线id
+			 * */
+			private function delNetStateLine(parent:Sprite, lineId:String):void{
+				for(var i:int=0;i<netStateLineArrCol.length;i++){
+					if(netStateLineArrCol[i].nslId == lineId){
+						
+						parent.removeChild(netStateLineArrCol[i]);
+						
+						netStateLineArrCol.removeItemAt(i);
+						netStateLineArrCol.refresh();
+
+					}
+				}
+			}
+			
+			/**
+			 * 
+			 * 查找网络状态线
+			 * @param lineId:线id
+			 * */
+			private function getNetStateLine(lineId:String):NetStateLine{
+				var line:NetStateLine = null;
+				
+				for(var i:int=0;i<netStateLineArrCol.length;i++){
+					if(netStateLineArrCol[i].nslId == lineId){
+						line = netStateLineArrCol[i];
+					}
+				}
+				
+				return line;
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Script>
+		<![CDATA[
+			import zjMap.module.mapItem;
+			import com.degrafa.geometry.Path;
+			import flash.filters.GlowFilter;
+
+			/**高亮*/
+			private var selectionGlow:GlowFilter=new GlowFilter(0xFFFFFF, 0.8, 10, 10, 3);
+			
+			private function onMapMouseMove(evt:MouseEvent):void{
+				if (evt.target is mapItem){
+					//map_surface.toolTip = evt.target.tooltip;
+					
+					map_group.addEventListener(MouseEvent.MOUSE_MOVE, onMove);
+					
+					mapToolTip.visible = true;
+					mapToolTip.text = evt.target.tooltip;
+					
+					var path:Path = evt.target.geometry[0];
+					path.filters = [selectionGlow];
+				}
+				
+			}
+			private function onMapMouseOut(evt:MouseEvent):void{
+				//map_surface.toolTip = "";
+				
+				mapToolTip.visible = false;
+
+				map_group.removeEventListener(MouseEvent.MOUSE_MOVE, onMove);
+				
+				if (evt.target is mapItem){
+					var path:Path = evt.target.geometry[0];
+					path.filters = null;
+				}
+			}
+			
+			private function onMove(evt:MouseEvent):void{
+				if (mapToolTip)
+				{
+					mapToolTip.move(evt.stageX + 10, evt.stageY);
+					if (mapToolTip.visible == false)
+						mapToolTip.visible=true;
+				}
+			}
+			
+
+		]]>
+	</fx:Script>
+	
+	<s:layout>
+		<s:HorizontalLayout/>
+	</s:layout>
+	
+	<s:BorderContainer width="{this.width-toolPanel.width}" height="100%"  autoLayout="true" >
+		<s:layout>
+			<s:VerticalLayout/>
+		</s:layout>
+		
+		<s:Group  id="container" width="100%" height="{this.height-SiteShortCutContainer.height}">
+			<s:layout>
+				<s:BasicLayout/>
+			</s:layout>
+			<s:BorderContainer id="map_mask" width="100%" height="100%" ></s:BorderContainer>
+			<s:BorderContainer id="map_container" width="100%" height="100%"  mask="{map_mask}">
+				<s:layout>
+					<s:BasicLayout/>
+				</s:layout>
+				<!--画布-->
+				<degrafa:Surface id="map_surface">
+					
+					<module:MapPath id="map_group">
+						
+					</module:MapPath>
+					
+					<degrafa:GeometryGroup id="ping_group" x="0" y="0" scaleX="1" scaleY="1" >
+						<degrafa:filters>
+							<mx:DropShadowFilter color="0x000000" alpha=".5"/>
+						</degrafa:filters>
+					</degrafa:GeometryGroup>
+					
+					
+					<degrafa:GeometryGroup id="mark_group" x="0" y="0" scaleX="1" scaleY="1" >
+						<degrafa:filters>
+							<mx:DropShadowFilter color="0x000000" alpha=".5"/>
+						</degrafa:filters>
+					</degrafa:GeometryGroup>
+					
+				</degrafa:Surface>	
+				
+			</s:BorderContainer>
+		</s:Group>	
+		
+		<!--站点快捷按钮容器-->
+		<s:BorderContainer id="SiteShortCutContainer" toolTip="节点" width="100%" height="100" >
+
+			<degrafa:Surface left="0" top="0" right="0" bottom="0">
+				
+				<!--图形GROUP-->
+				<degrafa:GeometryGroup id="SiteShortCut_group" x="0" y="0" scaleX="1" scaleY="1">
+				</degrafa:GeometryGroup>
+				
+			</degrafa:Surface>
+		</s:BorderContainer>
+	</s:BorderContainer>
+
+
+	<s:Panel id="toolPanel" toolTip="工具" width="200" height="100%" autoLayout="true">
+		<s:Scroller width="100%" height="100%">
+			<s:VGroup width="100%" height="100%">
+						<!--controll-->
+						<s:CheckBox id="mapMoveEnable" label="设置拖动" selected="false" />
+						
+						
+						<s:CheckBox id="mapZoomEnable" label="设置缩放" selected="false"  />
+						
+						<mx:NumericStepper id="number" minimum="0" maximum="10000" value="5000" stepSize="200" />
+						
+						<s:HSlider id="scale_slider"  minimum="0.1" maximum="3"  liveDragging="true" value="0.2" 
+								   showDataTip="true" 
+								   snapInterval="0.1"
+								   slideDuration="{number.value}"
+								  />
+						
+						<!--change="setScale(scale_slider.value)"-->
+						<!--mark point-->
+						<s:TextInput id="markPos" text="200,200"/>
+						<s:CheckBox id="addMarkEnable" label="设置mark点" selected="false"/><s:Button label="addMark" click="addMark_input()" enabled="{addMarkEnable.selected}"/>
+						
+						<!--line point-->
+						<s:TextInput id="pos_from" text="500,200"/>
+						<s:Label text="to"/>
+						<s:TextInput id="pos_to" text="800,200"/>
+						<s:Button label="line" click="toLine()"/>
+
+			</s:VGroup>
+		</s:Scroller>	
+
+	</s:Panel>
+
+</s:Application>

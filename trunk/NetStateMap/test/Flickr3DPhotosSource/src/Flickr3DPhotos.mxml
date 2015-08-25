@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application 
+  xmlns:mx="http://www.adobe.com/2006/mxml" 
+  layout="absolute" 
+  applicationComplete="appComplete()" 
+  width="600" 
+  height="400" 
+  backgroundGradientAlphas="[1.0, 1.0]" 
+  backgroundGradientColors="[#000000, #374040]"
+  frameRate="100">
+	
+	<mx:TextInput x="10" y="10" id="txtSearch"/>
+	<mx:Button x="178" y="10" label="Search" fillAlphas="[0.9, 0.9, 0.9, 0.9]" click="{applicationManager.flickrSearch(this.txtSearch.text)}"/>
+	
+	<mx:Script>
+		<![CDATA[
+			private var applicationManager:ApplicationManager = null;
+			
+			Security.loadPolicyFile("http://api.flickr.com/crossdomain.xml");
+			Security.loadPolicyFile("http://farm1.static.flickr.com/crossdomain.xml");
+			Security.loadPolicyFile("http://farm2.static.flickr.com/crossdomain.xml");
+			Security.loadPolicyFile("http://farm3.static.flickr.com/crossdomain.xml");
+			Security.loadPolicyFile("http://farm4.static.flickr.com/crossdomain.xml"); 
+			
+			private function appComplete():void
+			{
+				applicationManager = new ApplicationManager();
+				this.addChildAt(new SpriteUIComponent(applicationManager), 0);
+			}
+		]]>
+	</mx:Script>
+	
+</mx:Application>

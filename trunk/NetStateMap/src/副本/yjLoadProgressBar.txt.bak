@@ -1,0 +1,23 @@
+package 
+{   
+  import flash.display.*;   
+  import flash.events.*;   
+  import flash.net.*;   
+  import flash.text.TextField;   
+  import flash.text.TextFormat;   
+       
+  import mx.events.FlexEvent;   
+  import mx.preloaders.DownloadProgressBar;   
+  import org.gif.player.GIFPlayer; 
+     
+
+	public class yjLoadProgressBar extends DownloadProgressBar{   
+    	
+    	private var logo:Loader;   
+      private var txt:TextField;   
+      private var _preloader:Sprite;   
+      public function LoadingExampleProgressBar(){   
+
+			}
+	}
+}
